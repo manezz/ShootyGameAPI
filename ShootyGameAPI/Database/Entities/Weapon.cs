@@ -7,7 +7,7 @@ namespace ShootyGameAPI.Database.Entities
         // Properties
         public int WeaponId { get; set; }
         public int WeaponTypeId { get; set; }
-        public int Name { get; set; }
+        public string Name { get; set; }
         public int Price { get; set; }
         public float ReloadSpeed { get; set; }
         public int MagSize { get; set; }

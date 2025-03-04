@@ -12,7 +12,7 @@ using ShootyGameAPI.Database;
 namespace ShootyGameAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250304102954_initial")]
+    [Migration("20250304111926_initial")]
     partial class initial
     {
         /// <inheritdoc />
