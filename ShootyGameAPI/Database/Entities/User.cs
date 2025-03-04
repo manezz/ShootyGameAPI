@@ -1,5 +1,4 @@
 ﻿using ShootyGameAPI.Helpers;
-using System.Data;
 
 namespace ShootyGameAPI.Database.Entities
 {
@@ -13,7 +12,7 @@ namespace ShootyGameAPI.Database.Entities
         public string PlayerTag { get; set; }
         public int Money { get; set; }
         public Role Role { get; set; }
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 
         // Navigation properties

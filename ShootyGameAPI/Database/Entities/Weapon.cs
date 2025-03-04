@@ -12,7 +12,7 @@ namespace ShootyGameAPI.Database.Entities
         public int ReloadSpeed { get; set; }
         public int MagSize { get; set; }
         public int FireRate { get; set; }
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 
         // Navigation properties

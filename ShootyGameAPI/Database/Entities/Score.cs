@@ -8,7 +8,7 @@ namespace ShootyGameAPI.Database.Entities
         public int ScoreId { get; set; }
         public int UserId { get; set; }
         public int ScoreValue { get; set; }
-        public DateTime Created { get; set; }
+        public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
 
         // Navigation properties

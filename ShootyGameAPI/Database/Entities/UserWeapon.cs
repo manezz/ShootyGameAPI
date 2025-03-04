@@ -7,7 +7,7 @@ namespace ShootyGameAPI.Database.Entities
         // Properties
         public int UserId { get; set; }
         public int WeaponId { get; set; }
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 
         // Navigation properties
