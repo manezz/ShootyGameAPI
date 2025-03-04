@@ -141,7 +141,7 @@ namespace ShootyGameAPI.Migrations
                     WeaponTypeId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(64)", nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
-                    ReloadSpeed = table.Column<int>(type: "int", nullable: false),
+                    ReloadSpeed = table.Column<float>(type: "real", nullable: false),
                     MagSize = table.Column<int>(type: "int", nullable: false),
                     FireRate = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),

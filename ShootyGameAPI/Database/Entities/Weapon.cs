@@ -9,7 +9,7 @@ namespace ShootyGameAPI.Database.Entities
         public int WeaponTypeId { get; set; }
         public int Name { get; set; }
         public int Price { get; set; }
-        public int ReloadSpeed { get; set; }
+        public float ReloadSpeed { get; set; }
         public int MagSize { get; set; }
         public int FireRate { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

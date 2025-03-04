@@ -12,7 +12,7 @@ using ShootyGameAPI.Database;
 namespace ShootyGameAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250304095428_initial")]
+    [Migration("20250304102954_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -210,8 +210,8 @@ namespace ShootyGameAPI.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReloadSpeed")
-                        .HasColumnType("int");
+                    b.Property<float>("ReloadSpeed")
+                        .HasColumnType("real");
 
                     b.Property<int>("WeaponTypeId")
                         .HasColumnType("int");

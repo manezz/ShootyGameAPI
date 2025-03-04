@@ -207,8 +207,8 @@ namespace ShootyGameAPI.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReloadSpeed")
-                        .HasColumnType("int");
+                    b.Property<float>("ReloadSpeed")
+                        .HasColumnType("real");
 
                     b.Property<int>("WeaponTypeId")
                         .HasColumnType("int");
