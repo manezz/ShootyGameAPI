@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShootyGameAPI.Database.Entities;
+using ShootyGameAPI.Database.Entities.Interfaces;
 
 namespace ShootyGameAPI.Database
 {
     public class DatabaseContext : DbContext
     {
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Weapon> Weapons { get; set; }
         public DbSet<Score> Scores { get; set; }
@@ -13,7 +16,27 @@ namespace ShootyGameAPI.Database
         public DbSet<UserWeapon> UserWeapons { get; set; }
         public DbSet<WeaponType> WeaponTypes { get; set; }
 
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
+        public override int SaveChanges()
+        {
+            HandleDelete();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            HandleDelete();
+            return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void HandleDelete()
+        {
+            foreach (var entity in ChangeTracker.Entries<ISoftDelete>()
+                .Where(x => x.State == EntityState.Deleted))
+            {
+                entity.State = EntityState.Modified;
+                entity.CurrentValues["IsDeleted"] = true;
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,8 +63,8 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.PasswordHash).HasColumnType("nvarchar(200)").IsRequired();
                 entity.Property(e => e.Email).HasColumnType("nvarchar(64)").IsRequired();
                 entity.Property(e => e.PlayerTag).HasColumnType("nvarchar(60)").IsRequired();
-                entity.Property(e => e.Money).IsRequired();
-                entity.Property(e => e.Role).IsRequired();
+                entity.Property(e => e.Money);
+                entity.Property(e => e.Role);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
 

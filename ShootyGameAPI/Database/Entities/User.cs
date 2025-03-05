@@ -10,8 +10,8 @@ namespace ShootyGameAPI.Database.Entities
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public string PlayerTag { get; set; }
-        public int Money { get; set; }
-        public Role Role { get; set; }
+        public int Money { get; set; } = 0;
+        public Role Role { get; set; } = Role.User;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 
