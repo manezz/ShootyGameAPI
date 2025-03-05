@@ -62,7 +62,7 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.UserName).HasColumnType("nvarchar(64)").IsRequired();
                 entity.Property(e => e.PasswordHash).HasColumnType("nvarchar(200)").IsRequired();
                 entity.Property(e => e.Email).HasColumnType("nvarchar(64)").IsRequired();
-                entity.Property(e => e.PlayerTag).HasColumnType("nvarchar(60)").IsRequired();
+                entity.Property(e => e.PlayerTag).HasColumnType("nvarchar(100)").IsRequired();
                 entity.Property(e => e.Money);
                 entity.Property(e => e.Role);
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
