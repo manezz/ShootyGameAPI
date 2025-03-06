@@ -81,6 +81,7 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.ReloadSpeed).IsRequired();
                 entity.Property(e => e.MagSize).IsRequired();
                 entity.Property(e => e.FireRate).IsRequired();
+                entity.Property(e => e.FireMode).IsRequired();
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
             });

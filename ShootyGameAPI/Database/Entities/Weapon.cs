@@ -1,4 +1,5 @@
 ﻿using ShootyGameAPI.Database.Entities.Interfaces;
+using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPI.Database.Entities
 {
@@ -12,6 +13,7 @@ namespace ShootyGameAPI.Database.Entities
         public float ReloadSpeed { get; set; }
         public int MagSize { get; set; }
         public int FireRate { get; set; }
+        public FireMode FireMode { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 

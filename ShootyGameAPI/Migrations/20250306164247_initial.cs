@@ -144,6 +144,7 @@ namespace ShootyGameAPI.Migrations
                     ReloadSpeed = table.Column<float>(type: "real", nullable: false),
                     MagSize = table.Column<int>(type: "int", nullable: false),
                     FireRate = table.Column<int>(type: "int", nullable: false),
+                    FireMode = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },

@@ -12,7 +12,7 @@ using ShootyGameAPI.Database;
 namespace ShootyGameAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250305144119_initial")]
+    [Migration("20250306164247_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -193,6 +193,9 @@ namespace ShootyGameAPI.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
+
+                    b.Property<int>("FireMode")
+                        .HasColumnType("int");
 
                     b.Property<int>("FireRate")
                         .HasColumnType("int");

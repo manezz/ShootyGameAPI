@@ -51,6 +51,7 @@ namespace ShootyGameAPI.Repositorys
                 weapon.ReloadSpeed = updatedWeapon.ReloadSpeed;
                 weapon.MagSize = updatedWeapon.MagSize;
                 weapon.FireRate = updatedWeapon.FireRate;
+                weapon.FireMode = updatedWeapon.FireMode;
 
                 await _context.SaveChangesAsync();
                 return updatedWeapon;

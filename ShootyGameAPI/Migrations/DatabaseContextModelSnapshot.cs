@@ -191,6 +191,9 @@ namespace ShootyGameAPI.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
+                    b.Property<int>("FireMode")
+                        .HasColumnType("int");
+
                     b.Property<int>("FireRate")
                         .HasColumnType("int");
 

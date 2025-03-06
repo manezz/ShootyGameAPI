@@ -2,6 +2,7 @@
 using ShootyGameAPI.Database.Entities;
 using ShootyGameAPI.Database;
 using ShootyGameAPI.Repositorys;
+using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPITests.RepositoryTests
 {
@@ -31,13 +32,13 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 WeaponTypeId = 1,
                 Name = "Rifle",
-                EquipmentSlot = 1
+                EquipmentSlot = EquipmentSlot.Primary
             });
             _context.WeaponTypes.Add(new WeaponType
             {
                 WeaponTypeId = 2,
                 Name = "Pistol",
-                EquipmentSlot = 2
+                EquipmentSlot = EquipmentSlot.Secondary
             });
             await _context.SaveChangesAsync();
 
@@ -75,7 +76,7 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 WeaponTypeId = 1,
                 Name = "Rifle",
-                EquipmentSlot = 1
+                EquipmentSlot = EquipmentSlot.Primary
             });
             await _context.SaveChangesAsync();
 
@@ -111,8 +112,8 @@ namespace ShootyGameAPITests.RepositoryTests
 
             WeaponType newWeaponType = new()
             {
-                Name = "Shotgun",
-                EquipmentSlot = 1
+                Name = "Rifle",
+                EquipmentSlot = EquipmentSlot.Primary
             };
 
             // Act
@@ -134,7 +135,7 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 WeaponTypeId = 1,
                 Name = "Rifle",
-                EquipmentSlot = 1
+                EquipmentSlot = EquipmentSlot.Primary
             };
 
             await _weaponTypeRepository.CreateWeaponTypeAsync(existingWeaponType);
@@ -157,7 +158,7 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 WeaponTypeId = 1,
                 Name = "Rifle",
-                EquipmentSlot = 1
+                EquipmentSlot = EquipmentSlot.Primary
             };
 
             _context.WeaponTypes.Add(weaponType);
@@ -167,7 +168,7 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 WeaponTypeId = 1,
                 Name = "Assault Rifle",
-                EquipmentSlot = 1
+                EquipmentSlot = EquipmentSlot.Primary
             };
 
             // Act
@@ -190,7 +191,7 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 WeaponTypeId = 1,
                 Name = "Assault Rifle",
-                EquipmentSlot = 1
+                EquipmentSlot = EquipmentSlot.Primary
             };
 
             // Act
@@ -210,7 +211,7 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 WeaponTypeId = 1,
                 Name = "Rifle",
-                EquipmentSlot = 1
+                EquipmentSlot = EquipmentSlot.Primary
             };
 
             _context.WeaponTypes.Add(weaponType);

@@ -1,4 +1,5 @@
 ﻿using ShootyGameAPI.Database.Entities.Interfaces;
+using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPI.Database.Entities
 {
@@ -7,7 +8,7 @@ namespace ShootyGameAPI.Database.Entities
         // Properties
         public int WeaponTypeId { get; set; }
         public string Name { get; set; }
-        public int EquipmentSlot { get; set; }
+        public EquipmentSlot EquipmentSlot { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 
