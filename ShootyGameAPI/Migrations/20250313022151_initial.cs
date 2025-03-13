@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ShootyGameAPI.Migrations
 {
     /// <inheritdoc />
@@ -57,8 +59,7 @@ namespace ShootyGameAPI.Migrations
                     ReceiverId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     ResponseAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,11 +74,6 @@ namespace ShootyGameAPI.Migrations
                         column: x => x.RequesterId,
                         principalTable: "Users",
                         principalColumn: "UserId");
-                    table.ForeignKey(
-                        name: "FK_FriendRequests_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -87,8 +83,7 @@ namespace ShootyGameAPI.Migrations
                     User1Id = table.Column<int>(type: "int", nullable: false),
                     User2Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,11 +98,6 @@ namespace ShootyGameAPI.Migrations
                         column: x => x.User2Id,
                         principalTable: "Users",
                         principalColumn: "UserId");
-                    table.ForeignKey(
-                        name: "FK_Friends_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -118,6 +108,8 @@ namespace ShootyGameAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     ScoreValue = table.Column<int>(type: "int", nullable: false),
+                    AverageAccuracy = table.Column<float>(type: "real", nullable: false),
+                    RoundTime = table.Column<float>(type: "real", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -185,6 +177,48 @@ namespace ShootyGameAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "CreatedAt", "Email", "IsDeleted", "Money", "PasswordHash", "PlayerTag", "Role", "UserName" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 3, 6, 14, 21, 42, 70, DateTimeKind.Unspecified), "admin@mail.com", false, 0, "AQAAAAIAAYagAAAAEJMTFuO/fgInS4QHEQaSUkszZ3nuDWYQ0H4BcKRE94iHmvahKA+0Eueh5wgQKIbYuw==", "TestUser#7f3e4779", 0, "TestUser" },
+                    { 2, new DateTime(2025, 3, 6, 14, 22, 3, 780, DateTimeKind.Unspecified), "user@mail.com", false, 0, "AQAAAAIAAYagAAAAEP3n76UekjMkwna2ALIGJPoOAt/wZ8MrGQohB4/muBc1z2G4MpOPE7+wKt/JzoHFSw==", "TestUser#29818102", 1, "TestUser" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "WeaponTypes",
+                columns: new[] { "WeaponTypeId", "CreatedAt", "EquipmentSlot", "IsDeleted", "Name" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 3, 11, 11, 36, 37, 100, DateTimeKind.Unspecified), 1, false, "Pistol" },
+                    { 2, new DateTime(2025, 3, 11, 11, 36, 37, 150, DateTimeKind.Unspecified), 1, false, "Machine Pistol" },
+                    { 3, new DateTime(2025, 3, 11, 11, 36, 37, 200, DateTimeKind.Unspecified), 0, false, "Assault Rifle" },
+                    { 4, new DateTime(2025, 3, 11, 11, 36, 37, 250, DateTimeKind.Unspecified), 0, false, "Marksman Rifle" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Weapons",
+                columns: new[] { "WeaponId", "CreatedAt", "FireMode", "FireRate", "IsDeleted", "MagSize", "Name", "Price", "ReloadSpeed", "WeaponTypeId" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 3, 11, 12, 0, 0, 0, DateTimeKind.Unspecified), 0, 600, false, 15, "M9", 0, 0.95f, 1 },
+                    { 2, new DateTime(2025, 3, 11, 12, 2, 0, 0, DateTimeKind.Unspecified), 1, 1200, false, 18, "Tec9", 400, 1.05f, 2 },
+                    { 3, new DateTime(2025, 3, 11, 12, 4, 0, 0, DateTimeKind.Unspecified), 1, 750, false, 30, "G36", 0, 1.9f, 3 },
+                    { 4, new DateTime(2025, 3, 11, 12, 6, 0, 0, DateTimeKind.Unspecified), 0, 300, false, 15, "Scar-H", 800, 1.82f, 4 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "UserWeapons",
+                columns: new[] { "UserId", "WeaponId", "CreatedAt", "IsDeleted" },
+                values: new object[,]
+                {
+                    { 1, 1, new DateTime(2025, 3, 12, 12, 10, 0, 0, DateTimeKind.Unspecified), false },
+                    { 1, 3, new DateTime(2025, 3, 12, 12, 12, 0, 0, DateTimeKind.Unspecified), false },
+                    { 2, 1, new DateTime(2025, 3, 12, 12, 14, 0, 0, DateTimeKind.Unspecified), false },
+                    { 2, 3, new DateTime(2025, 3, 12, 12, 16, 0, 0, DateTimeKind.Unspecified), false }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_FriendRequests_ReceiverId",
                 table: "FriendRequests",
@@ -196,19 +230,9 @@ namespace ShootyGameAPI.Migrations
                 column: "RequesterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FriendRequests_UserId",
-                table: "FriendRequests",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Friends_User2Id",
                 table: "Friends",
                 column: "User2Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Friends_UserId",
-                table: "Friends",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Scores_UserId",

@@ -39,6 +39,35 @@ namespace ShootyGameAPI.Controllers
             }
         }
 
+        [Authorize(Role.User, Role.Admin)]
+        [HttpPost]
+        [Route("{userId}/weapons")]
+        public async Task<IActionResult> AddWeaponToUserAsync(int userId, [FromBody] UserWeaponRequest userWeaponRequest)
+        {
+            try
+            {
+                var currentUser = (UserResponse?)HttpContext.Items["User"];
+
+                if (currentUser == null || currentUser.UserId != userId && currentUser.Role != Role.Admin)
+                {
+                    return Unauthorized(new { message = "Unauthorized" });
+                }
+
+                var userResponse = await _userService.AddWeaponToUserAsync(userWeaponRequest);
+
+                if (userResponse == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(userResponse);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
         [Authorize(Role.Admin)]
         [HttpGet]
         public async Task<IActionResult> GetAllUsersAsync()
@@ -80,6 +109,7 @@ namespace ShootyGameAPI.Controllers
                 {
                     return NotFound();
                 }
+
                 return Ok(userResponse);
             }
             catch (Exception ex)

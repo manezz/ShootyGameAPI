@@ -8,7 +8,7 @@ namespace ShootyGameAPI.Repositorys
     {
         Task<List<Weapon>> GetAllWeaponsAsync();
         Task<Weapon?> FindWeaponByIdAsync(int id);
-        Task<Weapon> CreateWeaponAsync(Weapon newWeapon);
+        Task<Weapon?> CreateWeaponAsync(Weapon newWeapon);
         Task<Weapon?> UpdateWeaponByIdAsync(int weaponId, Weapon updatedWeapon);
         Task<Weapon?> DeleteWeaponByIdAsync(int id);
     }
@@ -29,19 +29,21 @@ namespace ShootyGameAPI.Repositorys
 
         public async Task<Weapon?> FindWeaponByIdAsync(int id)
         {
-            return await _context.Weapons.FindAsync(id);
+            return await _context.Weapons
+                .Include(x => x.WeaponType)
+                .FirstOrDefaultAsync(x => x.WeaponId == id);
         }
 
-        public async Task<Weapon> CreateWeaponAsync(Weapon newWeapon)
+        public async Task<Weapon?> CreateWeaponAsync(Weapon newWeapon)
         {
             _context.Weapons.Add(newWeapon);
             await _context.SaveChangesAsync();
-            return newWeapon;
+            return await FindWeaponByIdAsync(newWeapon.WeaponId);
         }
 
         public async Task<Weapon?> UpdateWeaponByIdAsync(int weaponId, Weapon updatedWeapon)
         {
-            var weapon = await FindWeaponByIdAsync(updatedWeapon.WeaponId);
+            var weapon = await FindWeaponByIdAsync(weaponId);
 
             if (weapon != null)
             {
@@ -54,7 +56,7 @@ namespace ShootyGameAPI.Repositorys
                 weapon.FireMode = updatedWeapon.FireMode;
 
                 await _context.SaveChangesAsync();
-                return updatedWeapon;
+                return await FindWeaponByIdAsync(weaponId);
             }
             return weapon;
         }

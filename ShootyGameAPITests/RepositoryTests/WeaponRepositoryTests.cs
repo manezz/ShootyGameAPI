@@ -89,6 +89,14 @@ namespace ShootyGameAPITests.RepositoryTests
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
+            var weaponType = new WeaponType
+            {
+                WeaponTypeId = 1,
+                Name = "Rifle"
+            };
+
+            _context.WeaponTypes.Add(weaponType);
+
             _context.Weapons.Add(new Weapon
             {
                 WeaponId = 1,
@@ -128,6 +136,14 @@ namespace ShootyGameAPITests.RepositoryTests
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
+
+            var weaponType = new WeaponType
+            {
+                WeaponTypeId = 1,
+                Name = "Rifle"
+            };
+
+            _context.WeaponTypes.Add(weaponType);
 
             int expectedNewId = 1;
 
@@ -182,6 +198,14 @@ namespace ShootyGameAPITests.RepositoryTests
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
+
+            var weaponType = new WeaponType
+            {
+                WeaponTypeId = 1,
+                Name = "Rifle"
+            };
+
+            _context.WeaponTypes.Add(weaponType);
 
             var weapon = new Weapon
             {
@@ -250,6 +274,14 @@ namespace ShootyGameAPITests.RepositoryTests
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
+
+            var weaponType = new WeaponType
+            {
+                WeaponTypeId = 1,
+                Name = "Rifle"
+            };
+
+            _context.WeaponTypes.Add(weaponType);
 
             var weapon = new Weapon
             {

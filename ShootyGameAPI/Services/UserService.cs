@@ -11,6 +11,7 @@ namespace ShootyGameAPI.Services
     public interface IUserService
     {
         public Task<SignInResponse?> AuthenticateAsync(SignInRequest request);
+        public Task<UserResponse?> AddWeaponToUserAsync(UserWeaponRequest userWeaponRequest);
         public Task<List<UserResponse>> FindAllUsersAsync();
         public Task<UserResponse?> FindUserByIdAsync(int userId);
         public Task<UserResponse?> CreateUserAsync(UserRequest newUser);
@@ -20,13 +21,15 @@ namespace ShootyGameAPI.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserWeaponRepository _userWeaponRepository;
         private readonly IJwtUtils _jwtUtils;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IUserRepository userRepository, IJwtUtils jwtUtils, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
+        public UserService(IUserRepository userRepository, IUserWeaponRepository userWeaponRepository, IJwtUtils jwtUtils, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
+            _userWeaponRepository = userWeaponRepository;
             _jwtUtils = jwtUtils;
             _passwordHasher = passwordHasher;
             _httpContextAccessor = httpContextAccessor;
@@ -41,7 +44,29 @@ namespace ShootyGameAPI.Services
                 Email = user.Email.ToLower(),
                 PlayerTag = user.PlayerTag,
                 Money = user.Money,
-                Role = user.Role
+                Role = user.Role,
+                Weapons = user.UserWeapons.Select(uw => new User_WeaponsResponse
+                {
+                    WeaponId = uw.WeaponId,
+                    Name = uw.Weapon.Name,
+                    ReloadSpeed = uw.Weapon.ReloadSpeed,
+                    MagSize = uw.Weapon.MagSize,
+                    FireRate = uw.Weapon.FireRate,
+                    FireMode = uw.Weapon.FireMode,
+                    WeaponType = new User_Weapon_WeaponTypeResponse
+                    {
+                        WeaponTypeId = uw.Weapon.WeaponType.WeaponTypeId,
+                        Name = uw.Weapon.WeaponType.Name,
+                        EquipmentSlot = uw.Weapon.WeaponType.EquipmentSlot
+                    }
+                }).ToList(),
+                Scores = user.Scores.Select(s => new User_ScoreResponse
+                {
+                    ScoreId = s.ScoreId,
+                    ScoreValue = s.ScoreValue,
+                    AverageAccuracy = s.AverageAccuracy,
+                    RoundTime = s.RoundTime
+                }).ToList()
             };
         }
 
@@ -67,6 +92,15 @@ namespace ShootyGameAPI.Services
             }
 
             return user;
+        }
+
+        private UserWeapon MapUserWeaponRequestToUserWeapon(UserWeaponRequest userWeaponRequest)
+        {
+            return new UserWeapon
+            {
+                UserId = userWeaponRequest.UserId,
+                WeaponId = userWeaponRequest.WeaponId
+            };
         }
 
         private bool VerifyPassword(User user, string enteredPassword)
@@ -99,6 +133,22 @@ namespace ShootyGameAPI.Services
                 Role = user.Role,
                 Token = _jwtUtils.GenerateJwtToken(user)
             };
+        }
+
+        public async Task<UserResponse?> AddWeaponToUserAsync(UserWeaponRequest userWeaponRequest)
+        {
+            var userWeapon = MapUserWeaponRequestToUserWeapon(userWeaponRequest);
+
+            await _userWeaponRepository.CreateUserWeaponAsync(userWeapon);
+
+            var user = await _userRepository.FindUserByIdAsync(userWeapon.UserId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return MapUserToUserResponse(user);
         }
 
         public async Task<List<UserResponse>> FindAllUsersAsync()

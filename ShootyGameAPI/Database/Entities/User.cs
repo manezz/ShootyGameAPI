@@ -1,8 +1,9 @@
-﻿using ShootyGameAPI.Helpers;
+﻿using ShootyGameAPI.Database.Entities.Interfaces;
+using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPI.Database.Entities
 {
-    public class User
+    public class User : ISoftDelete
     {
         // Properties
         public int UserId { get; set; }
@@ -18,7 +19,9 @@ namespace ShootyGameAPI.Database.Entities
         // Navigation properties
         public List<UserWeapon> UserWeapons { get; set; }
         public List<Score> Scores { get; set; }
-        public List<Friend> Friends { get; set; }
-        public List<FriendRequest> FriendRequests { get; set; }
+        public List<Friend> Friends1 { get; set; }
+        public List<Friend> Friends2 { get; set; }
+        public List<FriendRequest> FriendRequests1 { get; set; }
+        public List<FriendRequest> FriendRequests2 { get; set; }
     }
 }

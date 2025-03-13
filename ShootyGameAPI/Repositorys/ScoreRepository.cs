@@ -7,10 +7,10 @@ namespace ShootyGameAPI.Repositorys
     public interface IScoreRepository
     {
         Task<List<Score>> GetAllScoresAsync();
-        Task<Score?> FindScoreByIdAsync(int id);
-        Task<Score> CreateScoreAsync(Score newScore);
+        Task<Score?> FindScoreByIdAsync(int scoreId);
+        Task<Score?> CreateScoreAsync(Score newScore);
         Task<Score?> UpdateScoreByIdAsync(int scoreId, Score updatedScore);
-        Task<Score?> DeleteScoreByIdAsync(int id);
+        Task<Score?> DeleteScoreByIdAsync(int scoreId);
     }
 
     public class ScoreRepository : IScoreRepository
@@ -27,34 +27,36 @@ namespace ShootyGameAPI.Repositorys
             return await _context.Scores.ToListAsync();
         }
 
-        public async Task<Score?> FindScoreByIdAsync(int id)
+        public async Task<Score?> FindScoreByIdAsync(int scoreId)
         {
-            return await _context.Scores.FindAsync(id);
+            return await _context.Scores.FindAsync(scoreId);
         }
 
-        public async Task<Score> CreateScoreAsync(Score newScore)
+        public async Task<Score?> CreateScoreAsync(Score newScore)
         {
             _context.Scores.Add(newScore);
             await _context.SaveChangesAsync();
-            return newScore;
+            return await FindScoreByIdAsync(newScore.ScoreId);
         }
 
         public async Task<Score?> UpdateScoreByIdAsync(int scoreId, Score updatedScore)
         {
-            var score = await FindScoreByIdAsync(updatedScore.ScoreId);
+            var score = await FindScoreByIdAsync(scoreId);
             if (score != null)
             {
                 score.ScoreValue = updatedScore.ScoreValue;
+                score.AverageAccuracy = updatedScore.AverageAccuracy;
+                score.RoundTime = updatedScore.RoundTime;
 
                 await _context.SaveChangesAsync();
-                return updatedScore;
+                return await FindScoreByIdAsync(scoreId);
             }
             return score;
         }
 
-        public async Task<Score?> DeleteScoreByIdAsync(int id)
+        public async Task<Score?> DeleteScoreByIdAsync(int scoreId)
         {
-            var score = await FindScoreByIdAsync(id);
+            var score = await FindScoreByIdAsync(scoreId);
             if (score != null)
             {
                 _context.Scores.Remove(score);

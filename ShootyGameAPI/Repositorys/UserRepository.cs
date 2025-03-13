@@ -7,11 +7,11 @@ namespace ShootyGameAPI.Repositorys
     public interface IUserRepository
     {
         Task<List<User>> GetAllUsersAsync();
-        Task<User?> FindUserByIdAsync(int id);
+        Task<User?> FindUserByIdAsync(int userId);
         Task<User?> FindUserByEmailAsync(string email);
         Task<User> CreateUserAsync(User newUser);
         Task<User?> UpdateUserByIdAsync(int userId, User updatedUser);
-        Task<User?> DeleteUserByIdAsync(int id);
+        Task<User?> DeleteUserByIdAsync(int userId);
     }
 
     public class UserRepository : IUserRepository
@@ -25,12 +25,22 @@ namespace ShootyGameAPI.Repositorys
 
         public async Task<List<User>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(x => x.UserWeapons)
+                    .ThenInclude(x => x.Weapon)
+                        .ThenInclude(x => x.WeaponType)
+                .Include(x => x.Scores)
+                .ToListAsync();
         }
 
-        public async Task<User?> FindUserByIdAsync(int id)
+        public async Task<User?> FindUserByIdAsync(int userId)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                .Include(x => x.UserWeapons)
+                    .ThenInclude(x => x.Weapon)
+                        .ThenInclude(x => x.WeaponType)
+                .Include(x => x.Scores)
+                .FirstOrDefaultAsync(x => x.UserId == userId);
         }
 
         public async Task<User?> FindUserByEmailAsync(string email)
@@ -47,7 +57,7 @@ namespace ShootyGameAPI.Repositorys
 
         public async Task<User?> UpdateUserByIdAsync(int userId, User updatedUser)
         {
-            var user = await FindUserByIdAsync(updatedUser.UserId);
+            var user = await FindUserByIdAsync(userId);
 
             if (user != null)
             {
@@ -57,14 +67,14 @@ namespace ShootyGameAPI.Repositorys
                 user.PasswordHash = updatedUser.PasswordHash;
 
                 await _context.SaveChangesAsync();
-                return updatedUser;
+                return await FindUserByIdAsync(userId);
             }
             return user;
         }
 
-        public async Task<User?> DeleteUserByIdAsync(int id)
+        public async Task<User?> DeleteUserByIdAsync(int userId)
         {
-            var user = await FindUserByIdAsync(id);
+            var user = await FindUserByIdAsync(userId);
             if (user != null)
             {
                 _context.Users.Remove(user);

@@ -14,18 +14,146 @@ namespace ShootyGameAPITests.ServiceTests
     {
         private readonly UserService _userService;
         private readonly Mock<IUserRepository> _userRepositoryMock = new();
+        private readonly Mock<IUserWeaponRepository> _userWeaponRepositoryMock = new();
         private readonly Mock<IJwtUtils> _jwtUtilsMock = new();
         private readonly Mock<IPasswordHasher<User>> _passwordHasherMock = new();
-        private readonly Mock<IHttpContextAccessor> _httpContextAccessor = new();
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new();
 
         public UserServiceTests()
         {
             _userService = new UserService(
                 _userRepositoryMock.Object,
+                _userWeaponRepositoryMock.Object,
                 _jwtUtilsMock.Object,
                 _passwordHasherMock.Object,
-                _httpContextAccessor.Object);
+                _httpContextAccessorMock.Object);
         }
+
+        [Fact]
+        public async Task AuthenticateAsync_ShouldReturnSignInResponse_WhenCredentialsAreValid()
+        {
+            // Arrange
+            var request = new SignInRequest
+            {
+                Email = "admin@mail.dk",
+                Password = "ValidPassword"
+            };
+
+            var user = new User
+            {
+                UserId = 1,
+                UserName = "TestUser",
+                Email = "admin@mail.dk",
+                PasswordHash = "hashedPassword",
+                Role = Role.Admin,
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.FindUserByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+
+            _passwordHasherMock
+                .Setup(x => x.VerifyHashedPassword(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(PasswordVerificationResult.Success);
+
+            _jwtUtilsMock
+                .Setup(x => x.GenerateJwtToken(It.IsAny<User>()))
+                .Returns("fake-jwt-token");
+
+            // Act
+            var result = await _userService.AuthenticateAsync(request);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<SignInResponse>(result);
+            Assert.Equal(user.UserId, result?.UserId);
+            Assert.Equal("fake-jwt-token", result?.Token);
+        }
+
+        [Fact]
+        public async Task AuthenticateAsync_ShouldReturnNull_WhenCredentialsAreInvalid()
+        {
+            // Arrange
+            var request = new SignInRequest
+            {
+                Email = "admin@mail.dk",
+                Password = "InvalidPassword"
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.FindUserByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((User)null!);
+
+            // Act
+            var result = await _userService.AuthenticateAsync(request);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task AddWeaponToUserAsync_ShouldReturnUserResponse_WhenUserExists()
+        {
+            // Arrange
+            var userWeaponRequest = new UserWeaponRequest
+            {
+                UserId = 1,
+                WeaponId = 2
+            };
+
+            var user = new User
+            {
+                UserId = 1,
+                UserName = "TestUser",
+                Email = "user@mail.dk",
+                Role = Role.User,
+                UserWeapons = new(),
+                Scores = new()
+            };
+
+            var userWeapon = new UserWeapon
+            {
+                UserId = 1,
+                WeaponId = 2
+            };
+
+            _userRepositoryMock
+                .Setup(x => x.FindUserByIdAsync(userWeaponRequest.UserId))
+                .ReturnsAsync(user);
+
+            _userWeaponRepositoryMock
+                .Setup(x => x.CreateUserWeaponAsync(It.IsAny<UserWeapon>()))
+                .ReturnsAsync(userWeapon);
+
+            // Act
+            var result = await _userService.AddWeaponToUserAsync(userWeaponRequest);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(user.UserId, result?.UserId);
+        }
+
+        [Fact]
+        public async Task AddWeaponToUserAsync_ShouldReturnNull_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var userWeaponRequest = new UserWeaponRequest
+            {
+                UserId = 1,
+                WeaponId = 2
+            };
+
+            _userWeaponRepositoryMock
+                .Setup(x => x.CreateUserWeaponAsync(It.IsAny<UserWeapon>()))
+                .ReturnsAsync((UserWeapon)null!);
+
+            // Act
+            var result = await _userService.AddWeaponToUserAsync(userWeaponRequest);
+
+            // Assert
+            Assert.Null(result);
+        }
+
 
         [Fact]
         public async Task FindAllAsync_ShouldReturnListOfUserResponses_WhenUsersExist()
@@ -39,13 +167,17 @@ namespace ShootyGameAPITests.ServiceTests
                     UserName = "TestUser",
                     Email = "admin@mail.dk",
                     Role = Role.Admin,
+                    UserWeapons = new(),
+                    Scores = new()
                 },
                 new()
                 {
                     UserId = 2,
                     UserName = "TestUser",
                     Email = "user@mail.dk",
-                    Role = Role.User
+                    Role = Role.User,
+                    UserWeapons = new(),
+                    Scores = new()
                 },
             };
 
@@ -92,7 +224,9 @@ namespace ShootyGameAPITests.ServiceTests
                 UserId = userId,
                 UserName = "TestUser",
                 Email = "admin@mail.dk",
-                Role = Role.Admin
+                Role = Role.Admin,
+                UserWeapons = new(),
+                Scores = new()
             };
 
             _userRepositoryMock
@@ -145,6 +279,8 @@ namespace ShootyGameAPITests.ServiceTests
                 UserName = "TestUser",
                 Email = "user@mail.dk",
                 Role = Role.User,
+                UserWeapons = new(),
+                Scores = new()
             };
 
             _userRepositoryMock
@@ -211,7 +347,9 @@ namespace ShootyGameAPITests.ServiceTests
                 UserId = userId,
                 UserName = updateUser.UserName,
                 Email = updateUser.Email,
-                Role = updateUser.Role
+                Role = updateUser.Role,
+                UserWeapons = new(),
+                Scores = new()
             };
 
             _userRepositoryMock
@@ -274,7 +412,9 @@ namespace ShootyGameAPITests.ServiceTests
                 UserId = userId,
                 UserName = "TestUser",
                 Email = "admin@mail.dk",
-                Role = Role.Admin
+                Role = Role.Admin,
+                UserWeapons = new(),
+                Scores = new()
             };
 
             _userRepositoryMock

@@ -36,14 +36,9 @@ namespace ShootyGameAPI.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("User1Id", "User2Id");
 
                     b.HasIndex("User2Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Friends");
                 });
@@ -71,16 +66,11 @@ namespace ShootyGameAPI.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("FriendRequestId");
 
                     b.HasIndex("ReceiverId");
 
                     b.HasIndex("RequesterId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("FriendRequests");
                 });
@@ -93,11 +83,17 @@ namespace ShootyGameAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ScoreId"));
 
+                    b.Property<float>("AverageAccuracy")
+                        .HasColumnType("real");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<float>("RoundTime")
+                        .HasColumnType("real");
 
                     b.Property<int>("ScoreValue")
                         .HasColumnType("int");
@@ -157,6 +153,32 @@ namespace ShootyGameAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            CreatedAt = new DateTime(2025, 3, 6, 14, 21, 42, 70, DateTimeKind.Unspecified),
+                            Email = "admin@mail.com",
+                            IsDeleted = false,
+                            Money = 0,
+                            PasswordHash = "AQAAAAIAAYagAAAAEJMTFuO/fgInS4QHEQaSUkszZ3nuDWYQ0H4BcKRE94iHmvahKA+0Eueh5wgQKIbYuw==",
+                            PlayerTag = "TestUser#7f3e4779",
+                            Role = 0,
+                            UserName = "TestUser"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            CreatedAt = new DateTime(2025, 3, 6, 14, 22, 3, 780, DateTimeKind.Unspecified),
+                            Email = "user@mail.com",
+                            IsDeleted = false,
+                            Money = 0,
+                            PasswordHash = "AQAAAAIAAYagAAAAEP3n76UekjMkwna2ALIGJPoOAt/wZ8MrGQohB4/muBc1z2G4MpOPE7+wKt/JzoHFSw==",
+                            PlayerTag = "TestUser#29818102",
+                            Role = 1,
+                            UserName = "TestUser"
+                        });
                 });
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.UserWeapon", b =>
@@ -178,6 +200,36 @@ namespace ShootyGameAPI.Migrations
                     b.HasIndex("WeaponId");
 
                     b.ToTable("UserWeapons");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            WeaponId = 1,
+                            CreatedAt = new DateTime(2025, 3, 12, 12, 10, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            WeaponId = 3,
+                            CreatedAt = new DateTime(2025, 3, 12, 12, 12, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            WeaponId = 1,
+                            CreatedAt = new DateTime(2025, 3, 12, 12, 14, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            WeaponId = 3,
+                            CreatedAt = new DateTime(2025, 3, 12, 12, 16, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false
+                        });
                 });
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.Weapon", b =>
@@ -221,6 +273,60 @@ namespace ShootyGameAPI.Migrations
                     b.HasIndex("WeaponTypeId");
 
                     b.ToTable("Weapons");
+
+                    b.HasData(
+                        new
+                        {
+                            WeaponId = 1,
+                            CreatedAt = new DateTime(2025, 3, 11, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            FireMode = 0,
+                            FireRate = 600,
+                            IsDeleted = false,
+                            MagSize = 15,
+                            Name = "M9",
+                            Price = 0,
+                            ReloadSpeed = 0.95f,
+                            WeaponTypeId = 1
+                        },
+                        new
+                        {
+                            WeaponId = 2,
+                            CreatedAt = new DateTime(2025, 3, 11, 12, 2, 0, 0, DateTimeKind.Unspecified),
+                            FireMode = 1,
+                            FireRate = 1200,
+                            IsDeleted = false,
+                            MagSize = 18,
+                            Name = "Tec9",
+                            Price = 400,
+                            ReloadSpeed = 1.05f,
+                            WeaponTypeId = 2
+                        },
+                        new
+                        {
+                            WeaponId = 3,
+                            CreatedAt = new DateTime(2025, 3, 11, 12, 4, 0, 0, DateTimeKind.Unspecified),
+                            FireMode = 1,
+                            FireRate = 750,
+                            IsDeleted = false,
+                            MagSize = 30,
+                            Name = "G36",
+                            Price = 0,
+                            ReloadSpeed = 1.9f,
+                            WeaponTypeId = 3
+                        },
+                        new
+                        {
+                            WeaponId = 4,
+                            CreatedAt = new DateTime(2025, 3, 11, 12, 6, 0, 0, DateTimeKind.Unspecified),
+                            FireMode = 0,
+                            FireRate = 300,
+                            IsDeleted = false,
+                            MagSize = 15,
+                            Name = "Scar-H",
+                            Price = 800,
+                            ReloadSpeed = 1.82f,
+                            WeaponTypeId = 4
+                        });
                 });
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.WeaponType", b =>
@@ -247,25 +353,55 @@ namespace ShootyGameAPI.Migrations
                     b.HasKey("WeaponTypeId");
 
                     b.ToTable("WeaponTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            WeaponTypeId = 1,
+                            CreatedAt = new DateTime(2025, 3, 11, 11, 36, 37, 100, DateTimeKind.Unspecified),
+                            EquipmentSlot = 1,
+                            IsDeleted = false,
+                            Name = "Pistol"
+                        },
+                        new
+                        {
+                            WeaponTypeId = 2,
+                            CreatedAt = new DateTime(2025, 3, 11, 11, 36, 37, 150, DateTimeKind.Unspecified),
+                            EquipmentSlot = 1,
+                            IsDeleted = false,
+                            Name = "Machine Pistol"
+                        },
+                        new
+                        {
+                            WeaponTypeId = 3,
+                            CreatedAt = new DateTime(2025, 3, 11, 11, 36, 37, 200, DateTimeKind.Unspecified),
+                            EquipmentSlot = 0,
+                            IsDeleted = false,
+                            Name = "Assault Rifle"
+                        },
+                        new
+                        {
+                            WeaponTypeId = 4,
+                            CreatedAt = new DateTime(2025, 3, 11, 11, 36, 37, 250, DateTimeKind.Unspecified),
+                            EquipmentSlot = 0,
+                            IsDeleted = false,
+                            Name = "Marksman Rifle"
+                        });
                 });
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.Friend", b =>
                 {
                     b.HasOne("ShootyGameAPI.Database.Entities.User", "User1")
-                        .WithMany()
+                        .WithMany("Friends1")
                         .HasForeignKey("User1Id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ShootyGameAPI.Database.Entities.User", "User2")
-                        .WithMany()
+                        .WithMany("Friends2")
                         .HasForeignKey("User2Id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("ShootyGameAPI.Database.Entities.User", null)
-                        .WithMany("Friends")
-                        .HasForeignKey("UserId");
 
                     b.Navigation("User1");
 
@@ -275,20 +411,16 @@ namespace ShootyGameAPI.Migrations
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.FriendRequest", b =>
                 {
                     b.HasOne("ShootyGameAPI.Database.Entities.User", "Receiver")
-                        .WithMany()
+                        .WithMany("FriendRequests2")
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ShootyGameAPI.Database.Entities.User", "Requester")
-                        .WithMany()
+                        .WithMany("FriendRequests1")
                         .HasForeignKey("RequesterId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("ShootyGameAPI.Database.Entities.User", null)
-                        .WithMany("FriendRequests")
-                        .HasForeignKey("UserId");
 
                     b.Navigation("Receiver");
 
@@ -338,9 +470,13 @@ namespace ShootyGameAPI.Migrations
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.User", b =>
                 {
-                    b.Navigation("FriendRequests");
+                    b.Navigation("FriendRequests1");
 
-                    b.Navigation("Friends");
+                    b.Navigation("FriendRequests2");
+
+                    b.Navigation("Friends1");
+
+                    b.Navigation("Friends2");
 
                     b.Navigation("Scores");
 

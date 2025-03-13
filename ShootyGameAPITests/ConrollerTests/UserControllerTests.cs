@@ -96,6 +96,142 @@ namespace ShootyGameAPITests.ConrollerTests
         }
 
         [Fact]
+        public async Task AddWeaponToUserAsync_ShouldReturnStatusCode200_WhenWeaponIsAddedToUser()
+        {
+            // Arrange
+            int userId = 1;
+            var userWeaponRequest = new UserWeaponRequest
+            {
+                WeaponId = 1,
+                UserId = userId
+            };
+
+            var userResponse = new UserResponse
+            {
+                UserId = userId,
+                Email = "admin@mail.com",
+                Role = Role.Admin
+            };
+
+            var userResponseWithWeapon = new UserResponse
+            {
+                UserId = userId,
+                Email = "admin@mail.com",
+                Role = Role.Admin,
+                Weapons = new List<User_WeaponsResponse>
+                {
+                    new User_WeaponsResponse
+                    {
+                        WeaponId = 1,
+                        Name = "Pistol"
+                    }
+                }
+            };
+
+            _userServiceMock
+                .Setup(x => x.AddWeaponToUserAsync(It.IsAny<UserWeaponRequest>()))
+                .ReturnsAsync(userResponseWithWeapon);
+
+            httpContext.Items["User"] = userResponse;
+
+            // Act
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+
+            // Assert
+            Assert.Equal(200, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddWeaponToUserAsync_ShouldReturnStatusCode401_WhenUnauthorized()
+        {
+            // Arrange
+            int userId = 1;
+            var userWeaponRequest = new UserWeaponRequest
+            {
+                WeaponId = 1,
+                UserId = userId
+            };
+
+            var userResponse = new UserResponse
+            {
+                UserId = 2,
+                Email = "user@mail.com",
+                Role = Role.User
+            };
+
+            httpContext.Items["User"] = userResponse;
+
+            // Act
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+
+            // Assert
+            Assert.Equal(401, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddWeaponToUserAsync_ShouldReturnStatusCode404_WhenUserNotFound()
+        {
+            // Arrange
+            int userId = 1;
+            var userWeaponRequest = new UserWeaponRequest
+            {
+                WeaponId = 1,
+                UserId = userId
+            };
+
+            var userResponse = new UserResponse
+            {
+                UserId = userId,
+                Email = "admin@mail.com",
+                Role = Role.Admin
+            };
+
+            _userServiceMock
+                .Setup(x => x.AddWeaponToUserAsync(It.IsAny<UserWeaponRequest>()))
+                .ReturnsAsync(() => null);
+
+            httpContext.Items["User"] = userResponse;
+
+            // Act
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+
+            // Assert
+            Assert.Equal(404, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddWeaponToUserAsync_ShouldReturnStatusCode500_WhenExceptionIsRaised()
+        {
+            // Arrange
+            int userId = 1;
+            var userWeaponRequest = new UserWeaponRequest
+            {
+                WeaponId = 1,
+                UserId = userId
+            };
+
+            _userServiceMock
+                .Setup(x => x.AddWeaponToUserAsync(It.IsAny<UserWeaponRequest>()))
+                .ThrowsAsync(new Exception("This is an exception"));
+
+            var userResponse = new UserResponse
+            {
+                UserId = userId,
+                Email = "admin@mail.com",
+                Role = Role.Admin
+            };
+
+            httpContext.Items["User"] = userResponse;
+
+            // Act
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+
+            // Assert
+            Assert.Equal(500, result.StatusCode);
+        }
+
+
+        [Fact]
         public async Task GetAllUsersAsync_ShouldReturnStatusCode200_WhenUsersExist()
         {
             // Arrange
