@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using ShootyGameAPI.Authorization;
 using ShootyGameAPI.Database.Entities;
 using ShootyGameAPI.DTOs;
@@ -10,26 +11,34 @@ namespace ShootyGameAPI.Services
 {
     public interface IUserService
     {
-        public Task<SignInResponse?> AuthenticateAsync(SignInRequest request);
-        public Task<UserResponse?> AddWeaponToUserAsync(UserWeaponRequest userWeaponRequest);
-        public Task<List<UserResponse>> FindAllUsersAsync();
-        public Task<UserResponse?> FindUserByIdAsync(int userId);
-        public Task<UserResponse?> CreateUserAsync(UserRequest newUser);
-        public Task<UserResponse?> UpdateUserByIdAsync(int userId, UserRequest updatedUser);
-        public Task<UserResponse?> DeleteUserByIdAsync(int userId);
+        Task<SignInResponse?> AuthenticateAsync(SignInRequest request);
+        Task<UserResponse?> AddWeaponToUserAsync(UserWeaponRequest userWeaponRequest);
+        Task<UserResponse?> RemoveWeaponFromUserByIdAsync(int userId, int weaponId);
+        Task<FriendResponse?> FindFriendByIdAsync(int RequesterId, int ReceiverId);
+        Task<UserResponse?> AddFriendToUserAsync(int userId, FriendRequest friendRequest);
+        Task<UserResponse?> RemoveFriendFromUserByIdAsync(int RequesterId, int ReceiverId);
+        Task<List<UserResponse>> FindAllUsersAsync();
+        Task<UserResponse?> FindUserByIdAsync(int userId);
+        Task<UserResponse?> CreateUserAsync(UserRequest newUser);
+        Task<UserResponse?> UpdateUserByIdAsync(int userId, UserRequest updatedUser);
+        Task<UserResponse?> DeleteUserByIdAsync(int userId);
     }
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IUserWeaponRepository _userWeaponRepository;
+        private readonly IFriendRepository _friendRepository;
+        private readonly IWeaponRepository _weaponRepository;
         private readonly IJwtUtils _jwtUtils;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IUserRepository userRepository, IUserWeaponRepository userWeaponRepository, IJwtUtils jwtUtils, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
+        public UserService(IUserRepository userRepository, IUserWeaponRepository userWeaponRepository, IFriendRepository friendRepository, IWeaponRepository weaponRepository, IJwtUtils jwtUtils, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _userWeaponRepository = userWeaponRepository;
+            _friendRepository = friendRepository;
+            _weaponRepository = weaponRepository;
             _jwtUtils = jwtUtils;
             _passwordHasher = passwordHasher;
             _httpContextAccessor = httpContextAccessor;
@@ -66,7 +75,32 @@ namespace ShootyGameAPI.Services
                     ScoreValue = s.ScoreValue,
                     AverageAccuracy = s.AverageAccuracy,
                     RoundTime = s.RoundTime
-                }).ToList()
+                }).ToList(),
+                SentFriendRequests = user.SentFriendReqs.Select(fr => new User_FriendReqResponse
+                {
+                    FriendRequestId = fr.FriendReqId,
+                    RequesterId = fr.RequesterId,
+                    ReceiverId = fr.ReceiverId,
+                    Status =    fr.Status
+                }).ToList(),
+                ReceivedFriendRequests = user.ReceivedFriendReqs.Select(fr => new User_FriendReqResponse
+                {
+                    FriendRequestId = fr.FriendReqId,
+                    RequesterId = fr.RequesterId,
+                    ReceiverId = fr.ReceiverId,
+                    Status = fr.Status
+                }).ToList(),
+                Friends = user.FriendsAsRequester.Select(f => new User_FriendResponse
+                {
+                    UserId = f.ReceiverId,
+                    UserName = f.Receiver.UserName,
+                    PlayerTag = f.Receiver.PlayerTag
+                }).Concat(user.FriendsAsReceiver.Select(f => new User_FriendResponse
+                {
+                    UserId = f.RequesterId,
+                    UserName = f.Requester.UserName,
+                    PlayerTag = f.Requester.PlayerTag
+                })).ToList()
             };
         }
 
@@ -100,6 +134,15 @@ namespace ShootyGameAPI.Services
             {
                 UserId = userWeaponRequest.UserId,
                 WeaponId = userWeaponRequest.WeaponId
+            };
+        }
+
+        private Friend MapFriendRequestToFriend(FriendRequest friendRequest)
+        {
+            return new Friend
+            {
+                RequesterId = friendRequest.RequesterId,
+                ReceiverId = friendRequest.ReceiverId
             };
         }
 
@@ -137,18 +180,85 @@ namespace ShootyGameAPI.Services
 
         public async Task<UserResponse?> AddWeaponToUserAsync(UserWeaponRequest userWeaponRequest)
         {
-            var userWeapon = MapUserWeaponRequestToUserWeapon(userWeaponRequest);
+            var user = await _userRepository.FindUserByIdAsync(userWeaponRequest.UserId);
+            var weapon = await _weaponRepository.FindWeaponByIdAsync(userWeaponRequest.WeaponId);
 
-            await _userWeaponRepository.CreateUserWeaponAsync(userWeapon);
-
-            var user = await _userRepository.FindUserByIdAsync(userWeapon.UserId);
-
-            if (user == null)
+            if (user == null || weapon == null)
             {
                 return null;
             }
 
-            return MapUserToUserResponse(user);
+            if (user.Money >= weapon.Price)
+            {
+                user.Money -= weapon.Price;
+                await _userRepository.UpdateUserByIdAsync(userWeaponRequest.UserId, user);
+            }
+            else
+            {
+                throw new InvalidOperationException("Not enough money to purchase weapon.");
+            }
+
+            var userWeapon = MapUserWeaponRequestToUserWeapon(userWeaponRequest);
+            var newUserWeapon = await _userWeaponRepository.CreateUserWeaponAsync(userWeapon);
+
+            if (newUserWeapon == null)
+            {
+                return null;
+            }
+
+            return await FindUserByIdAsync(userWeaponRequest.UserId);
+        }
+
+        public async Task<UserResponse?> RemoveWeaponFromUserByIdAsync(int userId, int weaponId)
+        {
+            var userWeapon = await _userWeaponRepository.DeleteUserWeaponByIdAsync(userId, weaponId);
+
+            if (userWeapon == null)
+            {
+                return null;
+            }
+
+            return await FindUserByIdAsync(userId);
+        }
+
+        public async Task<FriendResponse?> FindFriendByIdAsync(int RequesterId, int ReceiverId)
+        {
+            var friend = await _friendRepository.FindFriendByIdAsync(RequesterId, ReceiverId);
+
+            if (friend == null)
+            {
+                return null;
+            }
+
+            return new FriendResponse
+            {
+                RequesterId = friend.RequesterId,
+                ReceiverId = friend.ReceiverId
+            };
+        }
+
+        public async Task<UserResponse?> AddFriendToUserAsync(int userId, FriendRequest friendRequest)
+        {
+            var friend = await _friendRepository.CreateFriendAsync(MapFriendRequestToFriend(friendRequest));
+
+            if (friend == null)
+            {
+                return null;
+            }
+
+            return await FindUserByIdAsync(userId);
+        }
+
+        public async Task<UserResponse?> RemoveFriendFromUserByIdAsync(int RequesterId, int ReceiverId)
+        {
+            var friend = await _friendRepository.DeleteFriendByIdAsync(RequesterId, ReceiverId);
+
+            if (friend == null)
+            {
+                return null;
+            }
+
+            return await FindUserByIdAsync(RequesterId);
         }
 
         public async Task<List<UserResponse>> FindAllUsersAsync()
@@ -187,6 +297,20 @@ namespace ShootyGameAPI.Services
         {
             var user = MapUserRequestToUser(newUser);
 
+            user.UserWeapons = new()
+            {
+                new UserWeapon
+                {
+                    UserId = user.UserId,
+                    WeaponId = 1 // Default weapon
+                },
+                new UserWeapon
+                {
+                    UserId = user.UserId,
+                    WeaponId = 3 // Default weapon
+                }
+            };
+
             try
             {
                 var createdUser = await _userRepository.CreateUserAsync(user);
@@ -207,8 +331,7 @@ namespace ShootyGameAPI.Services
 
         public async Task<UserResponse?> UpdateUserByIdAsync(int userId, UserRequest updatedUser)
         {
-            var thisUserId = userId;
-            var user = await _userRepository.UpdateUserByIdAsync(thisUserId, MapUserRequestToUser(updatedUser));
+            var user = await _userRepository.UpdateUserByIdAsync(userId, MapUserRequestToUser(updatedUser));
 
             if (user == null)
             {

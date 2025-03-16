@@ -135,7 +135,7 @@ namespace ShootyGameAPITests.ConrollerTests
             httpContext.Items["User"] = userResponse;
 
             // Act
-            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userWeaponRequest);
 
             // Assert
             Assert.Equal(200, result.StatusCode);
@@ -162,7 +162,7 @@ namespace ShootyGameAPITests.ConrollerTests
             httpContext.Items["User"] = userResponse;
 
             // Act
-            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userWeaponRequest);
 
             // Assert
             Assert.Equal(401, result.StatusCode);
@@ -193,7 +193,7 @@ namespace ShootyGameAPITests.ConrollerTests
             httpContext.Items["User"] = userResponse;
 
             // Act
-            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userWeaponRequest);
 
             // Assert
             Assert.Equal(404, result.StatusCode);
@@ -224,7 +224,7 @@ namespace ShootyGameAPITests.ConrollerTests
             httpContext.Items["User"] = userResponse;
 
             // Act
-            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userId, userWeaponRequest);
+            var result = (IStatusCodeActionResult)await _userController.AddWeaponToUserAsync(userWeaponRequest);
 
             // Assert
             Assert.Equal(500, result.StatusCode);

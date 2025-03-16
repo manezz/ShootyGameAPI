@@ -10,7 +10,7 @@ namespace ShootyGameAPI.Database.Entities
         public int ScoreValue { get; set; }
         public float AverageAccuracy { get; set; }
         public float RoundTime { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
 
         // Navigation properties

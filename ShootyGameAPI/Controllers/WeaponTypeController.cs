@@ -17,7 +17,7 @@ namespace ShootyGameAPI.Controllers
             _weaponTypeService = weaponTypeService;
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.User, Role.Admin)]
         [HttpGet]
         public async Task<IActionResult> GetAllWeaponTypesAsync()
         {
@@ -38,7 +38,7 @@ namespace ShootyGameAPI.Controllers
             }
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.User, Role.Admin)]
         [HttpGet("{weponTypeId}")]
         public async Task<IActionResult> FindWeaponTypeByIdAsync(int weponTypeId)
         {

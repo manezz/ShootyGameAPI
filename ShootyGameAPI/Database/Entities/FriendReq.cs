@@ -1,16 +1,18 @@
-﻿using ShootyGameAPI.Helpers;
+﻿using ShootyGameAPI.Database.Entities.Interfaces;
+using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPI.Database.Entities
 {
-    public class FriendRequest
+    public class FriendReq : ISoftDelete
     {
         // Properties
-        public int FriendRequestId { get; set; }
+        public int FriendReqId { get; set; }
         public int RequesterId { get; set; }
         public int ReceiverId { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
         public DateTime ResponseAt { get; set; }
-        public FriendRequestStatus Status { get; set; }
+        public FriendReqStatus Status { get; set; }
+        public bool IsDeleted { get; set; }
 
         // Navigation properties
         public User Requester { get; set; }

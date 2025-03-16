@@ -1,16 +1,19 @@
 ﻿using ShootyGameAPI.Database.Entities;
 using ShootyGameAPI.Database;
 using Microsoft.EntityFrameworkCore;
+using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPI.Repositorys
 {
     public interface IFriendRequestRepository
     {
-        public Task<List<FriendRequest>> FindAllFriendRequestsByRequesterIdAsync(int requesterId);
-        public Task<List<FriendRequest>> FindAllFriendRequestsByReceiverIdAsync(int receiverId);
-        public Task<FriendRequest?> FindFriendRequestByIdAsync(int friendRequestId);
-        public Task<FriendRequest> CreateFriendRequestAsync(FriendRequest newFriendRequest);
-        public Task<FriendRequest?> DeleteFriendRequestByIdAsync(int friendRequestId);
+        Task<List<FriendReq>> FindAllFriendReqByRequesterIdAsync(int requesterId);
+        Task<List<FriendReq>> FindAllFriendReqByReceiverIdAsync(int receiverId);
+        Task<FriendReq?> FindFriendReqByIdAsync(int friendReqId);
+        Task<FriendReq?> FindFriendReqByRequesterIdAndReceiverIdAsync(int requesterId, int receiverId);
+        Task<FriendReq?> CreateFriendReqAsync(FriendReq newFriendReq);
+        Task<FriendReq?> UpdateFriendReqByIdAsync(int friendReqId, FriendReq updatedFriendReq);
+        Task<FriendReq?> DeleteFriendReqByIdAsync(int friendReqId);
     }
 
     public class FriendRequestRepository : IFriendRequestRepository
@@ -22,37 +25,74 @@ namespace ShootyGameAPI.Repositorys
             _context = context;
         }
 
-        public async Task<List<FriendRequest>> FindAllFriendRequestsByRequesterIdAsync(int requesterId)
+        public async Task<List<FriendReq>> FindAllFriendReqByRequesterIdAsync(int requesterId)
         {
-            return await _context.FriendRequests.Where(f => f.RequesterId == requesterId).ToListAsync();
+            return await _context.FriendReqs.Where(f => f.RequesterId == requesterId)
+                .Include(f => f.Requester)
+                .Include(f => f.Receiver)
+                .Where(f => f.Status == FriendReqStatus.Pending)
+                .ToListAsync();
         }
 
-        public async Task<List<FriendRequest>> FindAllFriendRequestsByReceiverIdAsync(int receiverId)
+        public async Task<List<FriendReq>> FindAllFriendReqByReceiverIdAsync(int receiverId)
         {
-            return await _context.FriendRequests.Where(f => f.ReceiverId == receiverId).ToListAsync();
+            return await _context.FriendReqs.Where(f => f.ReceiverId == receiverId)
+                .Include(f => f.Requester)
+                .Include(f => f.Receiver)
+                .Where(f => f.Status == FriendReqStatus.Pending)
+                .ToListAsync();
         }
 
-        public async Task<FriendRequest?> FindFriendRequestByIdAsync(int friendRequestId)
+        public async Task<FriendReq?> FindFriendReqByIdAsync(int friendReqId)
         {
-            return await _context.FriendRequests.FindAsync(friendRequestId);
+            return await _context.FriendReqs
+                .Include(f => f.Requester)
+                .Include(f => f.Receiver)
+                .Where(f => f.Status == FriendReqStatus.Pending)
+                .FirstOrDefaultAsync(f => f.FriendReqId == friendReqId);
         }
 
-        public async Task<FriendRequest> CreateFriendRequestAsync(FriendRequest newFriendRequest)
+        // cheacks both ways
+        public async Task<FriendReq?> FindFriendReqByRequesterIdAndReceiverIdAsync(int requesterId, int receiverId)
         {
-            _context.FriendRequests.Add(newFriendRequest);
+            return await _context.FriendReqs
+                .Include(f => f.Requester)
+                .Include(f => f.Receiver)
+                .Where(f => f.Status == FriendReqStatus.Pending)
+                .FirstOrDefaultAsync(f => (f.RequesterId == requesterId && f.ReceiverId == receiverId)
+                || (f.RequesterId == receiverId && f.ReceiverId == requesterId));
+        }
+
+        public async Task<FriendReq?> CreateFriendReqAsync(FriendReq newFriendReq)
+        {
+            _context.FriendReqs.Add(newFriendReq);
             await _context.SaveChangesAsync();
-            return newFriendRequest;
+            return await FindFriendReqByIdAsync(newFriendReq.FriendReqId);
         }
 
-        public async Task<FriendRequest?> DeleteFriendRequestByIdAsync(int friendRequestId)
+        public async Task<FriendReq?> UpdateFriendReqByIdAsync(int friendReqId, FriendReq updatedFriendReq)
         {
-            var friendRequest = await FindFriendRequestByIdAsync(friendRequestId);
-            if (friendRequest != null)
+            var friendReq = await FindFriendReqByIdAsync(friendReqId);
+
+            if (friendReq != null)
             {
-                _context.FriendRequests.Remove(friendRequest);
+                friendReq.Status = updatedFriendReq.Status;
+
+                await _context.SaveChangesAsync();
+                return friendReq;
+            }
+            return friendReq;
+        }
+
+        public async Task<FriendReq?> DeleteFriendReqByIdAsync(int friendReqId)
+        {
+            var friendReq = await FindFriendReqByIdAsync(friendReqId);
+            if (friendReq != null)
+            {
+                _context.FriendReqs.Remove(friendReq);
                 await _context.SaveChangesAsync();
             }
-            return friendRequest;
+            return friendReq;
         }
     }
 }

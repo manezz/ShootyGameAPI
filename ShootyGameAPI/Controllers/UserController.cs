@@ -41,8 +41,37 @@ namespace ShootyGameAPI.Controllers
 
         [Authorize(Role.User, Role.Admin)]
         [HttpPost]
-        [Route("{userId}/weapons")]
-        public async Task<IActionResult> AddWeaponToUserAsync(int userId, [FromBody] UserWeaponRequest userWeaponRequest)
+        [Route("weapons")]
+        public async Task<IActionResult> AddWeaponToUserAsync([FromBody] UserWeaponRequest userWeaponRequest)
+        {
+            try
+            {
+                var currentUser = (UserResponse?)HttpContext.Items["User"];
+
+                if (currentUser == null || currentUser.UserId != userWeaponRequest.UserId && currentUser.Role != Role.Admin)
+                {
+                    return Unauthorized(new { message = "Unauthorized" });
+                }
+
+                var userResponse = await _userService.AddWeaponToUserAsync(userWeaponRequest);
+
+                if (userResponse == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(userResponse);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [Authorize(Role.User, Role.Admin)]
+        [HttpDelete]
+        [Route("{userId}/weapons/{weaponId}")]
+        public async Task<IActionResult> RemoveWeaponFromUserAsync(int userId, int weaponId)
         {
             try
             {
@@ -53,7 +82,36 @@ namespace ShootyGameAPI.Controllers
                     return Unauthorized(new { message = "Unauthorized" });
                 }
 
-                var userResponse = await _userService.AddWeaponToUserAsync(userWeaponRequest);
+                var userResponse = await _userService.RemoveWeaponFromUserByIdAsync(userId, weaponId);
+
+                if (userResponse == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(userResponse);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [Authorize(Role.User, Role.Admin)]
+        [HttpDelete]
+        [Route("{requesterId}/friends/{receiverId}")]
+        public async Task<IActionResult> RemoveFriendFromUserAsync(int requesterId, int receiverId)
+        {
+            try
+            {
+                var currentUser = (UserResponse?)HttpContext.Items["User"];
+
+                if (currentUser == null || currentUser.UserId != requesterId && currentUser.Role != Role.Admin)
+                {
+                    return Unauthorized(new { message = "Unauthorized" });
+                }
+
+                var userResponse = await _userService.RemoveFriendFromUserByIdAsync(requesterId, receiverId);
 
                 if (userResponse == null)
                 {

@@ -15,6 +15,8 @@ namespace ShootyGameAPITests.ServiceTests
         private readonly UserService _userService;
         private readonly Mock<IUserRepository> _userRepositoryMock = new();
         private readonly Mock<IUserWeaponRepository> _userWeaponRepositoryMock = new();
+        private readonly Mock<IWeaponRepository> _weaponRepositoryMock = new();
+        private readonly Mock<IFriendRepository> _friendRepositoryMock = new();
         private readonly Mock<IJwtUtils> _jwtUtilsMock = new();
         private readonly Mock<IPasswordHasher<User>> _passwordHasherMock = new();
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new();
@@ -24,6 +26,8 @@ namespace ShootyGameAPITests.ServiceTests
             _userService = new UserService(
                 _userRepositoryMock.Object,
                 _userWeaponRepositoryMock.Object,
+                _friendRepositoryMock.Object,
+                _weaponRepositoryMock.Object,
                 _jwtUtilsMock.Object,
                 _passwordHasherMock.Object,
                 _httpContextAccessorMock.Object);

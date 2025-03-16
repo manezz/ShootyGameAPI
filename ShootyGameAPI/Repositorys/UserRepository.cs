@@ -1,6 +1,7 @@
 ﻿using ShootyGameAPI.Database.Entities;
 using ShootyGameAPI.Database;
 using Microsoft.EntityFrameworkCore;
+using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPI.Repositorys
 {
@@ -9,7 +10,7 @@ namespace ShootyGameAPI.Repositorys
         Task<List<User>> GetAllUsersAsync();
         Task<User?> FindUserByIdAsync(int userId);
         Task<User?> FindUserByEmailAsync(string email);
-        Task<User> CreateUserAsync(User newUser);
+        Task<User?> CreateUserAsync(User newUser);
         Task<User?> UpdateUserByIdAsync(int userId, User updatedUser);
         Task<User?> DeleteUserByIdAsync(int userId);
     }
@@ -29,7 +30,11 @@ namespace ShootyGameAPI.Repositorys
                 .Include(x => x.UserWeapons)
                     .ThenInclude(x => x.Weapon)
                         .ThenInclude(x => x.WeaponType)
-                .Include(x => x.Scores)
+                .Include(x => x.SentFriendReqs.Where(f => f.Status == FriendReqStatus.Pending))
+                .Include(x => x.ReceivedFriendReqs.Where(f => f.Status == FriendReqStatus.Pending))
+                .Include(x => x.FriendsAsRequester)
+                .Include(x => x.FriendsAsReceiver)
+                .Include(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .ToListAsync();
         }
 
@@ -39,7 +44,13 @@ namespace ShootyGameAPI.Repositorys
                 .Include(x => x.UserWeapons)
                     .ThenInclude(x => x.Weapon)
                         .ThenInclude(x => x.WeaponType)
-                .Include(x => x.Scores)
+                .Include(x => x.SentFriendReqs.Where(f => f.Status == FriendReqStatus.Pending))
+                .Include(x => x.ReceivedFriendReqs.Where(f => f.Status == FriendReqStatus.Pending))
+                .Include(x => x.FriendsAsRequester)
+                    .ThenInclude(x => x.Receiver)
+                .Include(x => x.FriendsAsReceiver)
+                    .ThenInclude(x => x.Requester)
+                .Include(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .FirstOrDefaultAsync(x => x.UserId == userId);
         }
 
@@ -48,11 +59,11 @@ namespace ShootyGameAPI.Repositorys
             return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
         }
 
-        public async Task<User> CreateUserAsync(User newUser)
+        public async Task<User?> CreateUserAsync(User newUser)
         {
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
-            return newUser;
+            return await FindUserByIdAsync(newUser.UserId);
         }
 
         public async Task<User?> UpdateUserByIdAsync(int userId, User updatedUser)

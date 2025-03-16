@@ -12,7 +12,7 @@ using ShootyGameAPI.Database;
 namespace ShootyGameAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250313022151_initial")]
+    [Migration("20250315190412_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -27,35 +27,42 @@ namespace ShootyGameAPI.Migrations
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.Friend", b =>
                 {
-                    b.Property<int>("User1Id")
+                    b.Property<int>("RequesterId")
                         .HasColumnType("int");
 
-                    b.Property<int>("User2Id")
+                    b.Property<int>("ReceiverId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GetDate()");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.HasKey("User1Id", "User2Id");
+                    b.HasKey("RequesterId", "ReceiverId");
 
-                    b.HasIndex("User2Id");
+                    b.HasIndex("ReceiverId");
 
                     b.ToTable("Friends");
                 });
 
-            modelBuilder.Entity("ShootyGameAPI.Database.Entities.FriendRequest", b =>
+            modelBuilder.Entity("ShootyGameAPI.Database.Entities.FriendReq", b =>
                 {
-                    b.Property<int>("FriendRequestId")
+                    b.Property<int>("FriendReqId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FriendRequestId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FriendReqId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GetDate()");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ReceiverId")
                         .HasColumnType("int");
@@ -67,15 +74,17 @@ namespace ShootyGameAPI.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
-                    b.HasKey("FriendRequestId");
+                    b.HasKey("FriendReqId");
 
                     b.HasIndex("ReceiverId");
 
                     b.HasIndex("RequesterId");
 
-                    b.ToTable("FriendRequests");
+                    b.ToTable("FriendReqs");
                 });
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.Score", b =>
@@ -90,7 +99,9 @@ namespace ShootyGameAPI.Migrations
                         .HasColumnType("real");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GetDate()");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -120,7 +131,9 @@ namespace ShootyGameAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GetDate()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -130,7 +143,9 @@ namespace ShootyGameAPI.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("Money")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -141,7 +156,9 @@ namespace ShootyGameAPI.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Role")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -167,7 +184,7 @@ namespace ShootyGameAPI.Migrations
                             Money = 0,
                             PasswordHash = "AQAAAAIAAYagAAAAEJMTFuO/fgInS4QHEQaSUkszZ3nuDWYQ0H4BcKRE94iHmvahKA+0Eueh5wgQKIbYuw==",
                             PlayerTag = "TestUser#7f3e4779",
-                            Role = 0,
+                            Role = 1,
                             UserName = "TestUser"
                         },
                         new
@@ -179,7 +196,7 @@ namespace ShootyGameAPI.Migrations
                             Money = 0,
                             PasswordHash = "AQAAAAIAAYagAAAAEP3n76UekjMkwna2ALIGJPoOAt/wZ8MrGQohB4/muBc1z2G4MpOPE7+wKt/JzoHFSw==",
                             PlayerTag = "TestUser#29818102",
-                            Role = 1,
+                            Role = 0,
                             UserName = "TestUser"
                         });
                 });
@@ -193,7 +210,9 @@ namespace ShootyGameAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GetDate()");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -244,10 +263,14 @@ namespace ShootyGameAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WeaponId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GetDate()");
 
                     b.Property<int>("FireMode")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("FireRate")
                         .HasColumnType("int");
@@ -341,7 +364,9 @@ namespace ShootyGameAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WeaponTypeId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("GetDate()");
 
                     b.Property<int>("EquipmentSlot")
                         .HasColumnType("int");
@@ -394,33 +419,33 @@ namespace ShootyGameAPI.Migrations
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.Friend", b =>
                 {
-                    b.HasOne("ShootyGameAPI.Database.Entities.User", "User1")
-                        .WithMany("Friends1")
-                        .HasForeignKey("User1Id")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ShootyGameAPI.Database.Entities.User", "User2")
-                        .WithMany("Friends2")
-                        .HasForeignKey("User2Id")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("User1");
-
-                    b.Navigation("User2");
-                });
-
-            modelBuilder.Entity("ShootyGameAPI.Database.Entities.FriendRequest", b =>
-                {
                     b.HasOne("ShootyGameAPI.Database.Entities.User", "Receiver")
-                        .WithMany("FriendRequests2")
+                        .WithMany("FriendsAsReceiver")
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ShootyGameAPI.Database.Entities.User", "Requester")
-                        .WithMany("FriendRequests1")
+                        .WithMany("FriendsAsRequester")
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Requester");
+                });
+
+            modelBuilder.Entity("ShootyGameAPI.Database.Entities.FriendReq", b =>
+                {
+                    b.HasOne("ShootyGameAPI.Database.Entities.User", "Receiver")
+                        .WithMany("ReceivedFriendReqs")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ShootyGameAPI.Database.Entities.User", "Requester")
+                        .WithMany("SentFriendReqs")
                         .HasForeignKey("RequesterId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -473,15 +498,15 @@ namespace ShootyGameAPI.Migrations
 
             modelBuilder.Entity("ShootyGameAPI.Database.Entities.User", b =>
                 {
-                    b.Navigation("FriendRequests1");
+                    b.Navigation("FriendsAsReceiver");
 
-                    b.Navigation("FriendRequests2");
+                    b.Navigation("FriendsAsRequester");
 
-                    b.Navigation("Friends1");
-
-                    b.Navigation("Friends2");
+                    b.Navigation("ReceivedFriendReqs");
 
                     b.Navigation("Scores");
+
+                    b.Navigation("SentFriendReqs");
 
                     b.Navigation("UserWeapons");
                 });

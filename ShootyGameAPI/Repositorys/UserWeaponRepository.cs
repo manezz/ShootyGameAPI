@@ -6,10 +6,10 @@ namespace ShootyGameAPI.Repositorys
 {
     public interface IUserWeaponRepository
     {
-        public Task<List<UserWeapon>> FindAllUserWeaponsByUserIdAsync(int userId);
-        public Task<UserWeapon?> FindUserWeaponByIdAsync(int userId, int weaponId);
-        public Task<UserWeapon> CreateUserWeaponAsync(UserWeapon newUserWeapon);
-        public Task<UserWeapon?> DeleteUserWeaponByIdAsync(int userId, int weaponId);
+        Task<List<UserWeapon>> FindAllUserWeaponsByUserIdAsync(int userId);
+        Task<UserWeapon?> FindUserWeaponByIdAsync(int userId, int weaponId);
+        Task<UserWeapon> CreateUserWeaponAsync(UserWeapon newUserWeapon);
+        Task<UserWeapon?> DeleteUserWeaponByIdAsync(int userId, int weaponId);
     }
     public class UserWeaponRepository : IUserWeaponRepository
     {

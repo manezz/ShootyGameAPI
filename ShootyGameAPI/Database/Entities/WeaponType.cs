@@ -9,7 +9,7 @@ namespace ShootyGameAPI.Database.Entities
         public int WeaponTypeId { get; set; }
         public string Name { get; set; }
         public EquipmentSlot EquipmentSlot { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
 
         // Navigation properties
