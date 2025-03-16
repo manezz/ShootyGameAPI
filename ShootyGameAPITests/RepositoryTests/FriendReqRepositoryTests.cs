@@ -5,24 +5,24 @@ using ShootyGameAPI.Repositorys;
 
 namespace ShootyGameAPITests.RepositoryTests
 {
-    public class FriendRequestRepositoryTests
+    public class FriendReqRepositoryTests
     {
         private readonly DbContextOptions<DatabaseContext> _options;
         private readonly DatabaseContext _context;
-        private readonly FriendRequestRepository _friendRequestRepository;
+        private readonly FriendRequestRepository _friendReqRepository;
 
-        public FriendRequestRepositoryTests()
+        public FriendReqRepositoryTests()
         {
             _options = new DbContextOptionsBuilder<DatabaseContext>()
-                .UseInMemoryDatabase(databaseName: "FriendRequestRepositoryTests")
+                .UseInMemoryDatabase(databaseName: "FriendReqRepositoryTests")
                 .Options;
 
             _context = new(_options);
-            _friendRequestRepository = new(_context);
+            _friendReqRepository = new(_context);
         }
 
         [Fact]
-        public async Task FindAllFriendRequestsByRequesterIdAsync_ShouldReturnListOfFriendRequests_WhenFriendRequestsExist()
+        public async Task FindAllFriendReqByRequesterIdAsync_ShouldReturnListOfFriendReqs_WhenFriendReqsExist()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
@@ -51,12 +51,12 @@ namespace ShootyGameAPITests.RepositoryTests
                 PasswordHash = "Passw0rd"
             });
 
-            _context.FriendRequests.Add(new FriendRequest
+            _context.FriendReqs.Add(new FriendReq
             {
                 RequesterId = 1,
                 ReceiverId = 2
             });
-            _context.FriendRequests.Add(new FriendRequest
+            _context.FriendReqs.Add(new FriendReq
             {
                 RequesterId = 1,
                 ReceiverId = 3
@@ -64,31 +64,31 @@ namespace ShootyGameAPITests.RepositoryTests
             await _context.SaveChangesAsync();
 
             // Act
-            var result = await _friendRequestRepository.FindAllFriendRequestsByRequesterIdAsync(1);
+            var result = await _friendReqRepository.FindAllFriendReqByRequesterIdAsync(1);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<List<FriendRequest>>(result);
+            Assert.IsType<List<FriendReq>>(result);
             Assert.Equal(2, result.Count);
         }
 
         [Fact]
-        public async Task FindAllFriendRequestsByRequesterIdAsync_ShouldReturnEmptyList_WhenNoFriendRequestsExist()
+        public async Task FindAllFriendReqsByRequesterIdAsync_ShouldReturnEmptyList_WhenNoFriendReqsExist()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
             // Act
-            var result = await _friendRequestRepository.FindAllFriendRequestsByRequesterIdAsync(1);
+            var result = await _friendReqRepository.FindAllFriendReqByRequesterIdAsync(1);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<List<FriendRequest>>(result);
+            Assert.IsType<List<FriendReq>>(result);
             Assert.Empty(result);
         }
 
         [Fact]
-        public async Task FindAllFriendRequestsByReceiverIdAsync_ShouldReturnListOfFriendRequests_WhenFriendRequestsExist()
+        public async Task FindAllFriendReqsByReceiverIdAsync_ShouldReturnListOfFriendReqs_WhenFriendReqsExist()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
@@ -117,12 +117,12 @@ namespace ShootyGameAPITests.RepositoryTests
                 PasswordHash = "Passw0rd"
             });
 
-            _context.FriendRequests.Add(new FriendRequest
+            _context.FriendReqs.Add(new FriendReq
             {
                 RequesterId = 2,
                 ReceiverId = 1
             });
-            _context.FriendRequests.Add(new FriendRequest
+            _context.FriendReqs.Add(new FriendReq
             {
                 RequesterId = 3,
                 ReceiverId = 1
@@ -130,26 +130,26 @@ namespace ShootyGameAPITests.RepositoryTests
             await _context.SaveChangesAsync();
 
             // Act
-            var result = await _friendRequestRepository.FindAllFriendRequestsByReceiverIdAsync(1);
+            var result = await _friendReqRepository.FindAllFriendReqByReceiverIdAsync(1);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<List<FriendRequest>>(result);
+            Assert.IsType<List<FriendReq>>(result);
             Assert.Equal(2, result.Count);
         }
 
         [Fact]
-        public async Task FindAllFriendRequestsByReceiverIdAsync_ShouldReturnEmptyList_WhenNoFriendRequestsExist()
+        public async Task FindAllFriendReqsByReceiverIdAsync_ShouldReturnEmptyList_WhenNoFriendReqsExist()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
             // Act
-            var result = await _friendRequestRepository.FindAllFriendRequestsByReceiverIdAsync(1);
+            var result = await _friendReqRepository.FindAllFriendReqByReceiverIdAsync(1);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<List<FriendRequest>>(result);
+            Assert.IsType<List<FriendReq>>(result);
             Assert.Empty(result);
         }
 
@@ -158,73 +158,73 @@ namespace ShootyGameAPITests.RepositoryTests
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
-            var friendRequest = new FriendRequest
+            var friendReq = new FriendReq
             {
                 RequesterId = 1,
                 ReceiverId = 2
             };
-            _context.FriendRequests.Add(friendRequest);
+            _context.FriendReqs.Add(friendReq);
             await _context.SaveChangesAsync();
 
             // Act
-            var result = await _friendRequestRepository.FindFriendRequestByIdAsync(friendRequest.FriendRequestId);
+            var result = await _friendReqRepository.FindFriendReqByIdAsync(friendReq.FriendReqId);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(friendRequest.FriendRequestId, result.FriendRequestId);
+            Assert.Equal(friendReq.FriendReqId, result.FriendReqId);
         }
 
         [Fact]
-        public async Task FindFriendRequestByIdAsync_ShouldReturnNull_WhenFriendRequestDoesNotExist()
+        public async Task FindFriendReqByIdAsync_ShouldReturnNull_WhenFriendReqDoesNotExist()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
             // Act
-            var result = await _friendRequestRepository.FindFriendRequestByIdAsync(1);
+            var result = await _friendReqRepository.FindFriendReqByIdAsync(1);
 
             // Assert
             Assert.Null(result);
         }
 
         [Fact]
-        public async Task CreateFriendRequestAsync_ShouldAddNewId_WhenSavingToDatabase()
+        public async Task CreateFriendReqAsync_ShouldAddNewId_WhenSavingToDatabase()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
-            var newFriendRequest = new FriendRequest
+            var newFriendRequest = new FriendReq
             {
                 RequesterId = 1,
                 ReceiverId = 2
             };
 
             // Act
-            var result = await _friendRequestRepository.CreateFriendRequestAsync(newFriendRequest);
+            var result = await _friendReqRepository.CreateFriendReqAsync(newFriendRequest);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<FriendRequest>(result);
-            Assert.NotEqual(0, result.FriendRequestId); // Check that a new ID is assigned
+            Assert.IsType<FriendReq>(result);
+            Assert.NotEqual(0, result.FriendReqId); // Check that a new ID is assigned
         }
 
         [Fact]
-        public async Task CreateFriendRequestAsync_ShouldFailToAddDuplicateFriendRequest_WhenFriendRequestIdAlreadyExists()
+        public async Task CreateFriendReqAsync_ShouldFailToAddDuplicateFriendReq_WhenFriendReqIdAlreadyExists()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
-            var friendRequest = new FriendRequest
+            var friendRequest = new FriendReq
             {
-                FriendRequestId = 1,
+                FriendReqId = 1,
                 RequesterId = 1,
                 ReceiverId = 2
             };
 
-            await _friendRequestRepository.CreateFriendRequestAsync(friendRequest);
+            await _friendReqRepository.CreateFriendReqAsync(friendRequest);
 
             // Act
-            async Task action() => await _friendRequestRepository.CreateFriendRequestAsync(friendRequest);
+            async Task action() => await _friendReqRepository.CreateFriendReqAsync(friendRequest);
 
             // Assert
             var ex = await Assert.ThrowsAsync<ArgumentException>(action);
@@ -232,35 +232,35 @@ namespace ShootyGameAPITests.RepositoryTests
         }
 
         [Fact]
-        public async Task DeleteFriendRequestByIdAsync_ShouldRemoveFriendRequestFromDatabase_WhenFriendRequestExists()
+        public async Task DeleteFriendReqByIdAsync_ShouldRemoveFriendReqFromDatabase_WhenFriendReqExists()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
-            var friendRequest = new FriendRequest
+            var friendRequest = new FriendReq
             {
                 RequesterId = 1,
                 ReceiverId = 2
             };
-            _context.FriendRequests.Add(friendRequest);
+            _context.FriendReqs.Add(friendRequest);
             await _context.SaveChangesAsync();
 
             // Act
-            var result = await _friendRequestRepository.DeleteFriendRequestByIdAsync(friendRequest.FriendRequestId);
+            var result = await _friendReqRepository.DeleteFriendReqByIdAsync(friendRequest.FriendReqId);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(friendRequest.FriendRequestId, result.FriendRequestId);
-            Assert.Null(await _context.FriendRequests.FindAsync(friendRequest.FriendRequestId));
+            Assert.Equal(friendRequest.FriendReqId, result.FriendReqId);
+            Assert.Null(await _context.FriendReqs.FindAsync(friendRequest.FriendReqId));
         }
 
         [Fact]
-        public async Task DeleteFriendRequestByIdAsync_ShouldReturnNull_WhenFriendRequestDoesNotExist()
+        public async Task DeleteFriendReqByIdAsync_ShouldReturnNull_WhenFriendReqDoesNotExist()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
             // Act
-            var result = await _friendRequestRepository.DeleteFriendRequestByIdAsync(1);
+            var result = await _friendReqRepository.DeleteFriendReqByIdAsync(1);
 
             // Assert
             Assert.Null(result);

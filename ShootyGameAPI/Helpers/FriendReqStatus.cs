@@ -1,6 +1,6 @@
 ﻿namespace ShootyGameAPI.Helpers
 {
-    public enum FriendRequestStatus
+    public enum FriendReqStatus
     {
         Pending = 0,
         Accepted = 1,

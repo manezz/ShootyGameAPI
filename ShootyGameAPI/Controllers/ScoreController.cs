@@ -17,7 +17,7 @@ namespace ShootyGameAPI.Controllers
             _scoreService = scoreService;
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.User, Role.Admin)]
         [HttpGet]
         public async Task<IActionResult> GetAllScoresAsync()
         {
@@ -38,7 +38,7 @@ namespace ShootyGameAPI.Controllers
             }
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.User, Role.Admin)]
         [HttpGet("{scoreId}")]
         public async Task<IActionResult> FindScoreByIdAsync(int scoreId)
         {
@@ -59,12 +59,19 @@ namespace ShootyGameAPI.Controllers
             }
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.User, Role.Admin)]
         [HttpPost]
         public async Task<IActionResult> CreateScoreAsync([FromBody] ScoreRequest scoreRequest)
         {
             try
             {
+                var currentUser = (UserResponse?)HttpContext.Items["User"];
+
+                if (currentUser == null || currentUser.UserId != scoreRequest.UserId && currentUser.Role != Role.Admin)
+                {
+                    return Unauthorized(new { message = "Unauthorized" });
+                }
+
                 var scoreResponse = await _scoreService.CreateScoreAsync(scoreRequest);
 
                 return Ok(scoreResponse);

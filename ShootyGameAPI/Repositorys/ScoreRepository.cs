@@ -24,7 +24,9 @@ namespace ShootyGameAPI.Repositorys
 
         public async Task<List<Score>> GetAllScoresAsync()
         {
-            return await _context.Scores.ToListAsync();
+            return await _context.Scores
+                .OrderByDescending(x => x.ScoreValue)
+                .ToListAsync();
         }
 
         public async Task<Score?> FindScoreByIdAsync(int scoreId)

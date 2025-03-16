@@ -23,9 +23,9 @@ namespace ShootyGameAPI.Migrations
                     Email = table.Column<string>(type: "nvarchar(64)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     PlayerTag = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    Money = table.Column<int>(type: "int", nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Money = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Role = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GetDate()"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -41,7 +41,7 @@ namespace ShootyGameAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(64)", nullable: false),
                     EquipmentSlot = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GetDate()"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -50,27 +50,28 @@ namespace ShootyGameAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FriendRequests",
+                name: "FriendReqs",
                 columns: table => new
                 {
-                    FriendRequestId = table.Column<int>(type: "int", nullable: false)
+                    FriendReqId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RequesterId = table.Column<int>(type: "int", nullable: false),
                     ReceiverId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GetDate()"),
                     ResponseAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FriendRequests", x => x.FriendRequestId);
+                    table.PrimaryKey("PK_FriendReqs", x => x.FriendReqId);
                     table.ForeignKey(
-                        name: "FK_FriendRequests_Users_ReceiverId",
+                        name: "FK_FriendReqs_Users_ReceiverId",
                         column: x => x.ReceiverId,
                         principalTable: "Users",
                         principalColumn: "UserId");
                     table.ForeignKey(
-                        name: "FK_FriendRequests_Users_RequesterId",
+                        name: "FK_FriendReqs_Users_RequesterId",
                         column: x => x.RequesterId,
                         principalTable: "Users",
                         principalColumn: "UserId");
@@ -80,22 +81,22 @@ namespace ShootyGameAPI.Migrations
                 name: "Friends",
                 columns: table => new
                 {
-                    User1Id = table.Column<int>(type: "int", nullable: false),
-                    User2Id = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    RequesterId = table.Column<int>(type: "int", nullable: false),
+                    ReceiverId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GetDate()"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Friends", x => new { x.User1Id, x.User2Id });
+                    table.PrimaryKey("PK_Friends", x => new { x.RequesterId, x.ReceiverId });
                     table.ForeignKey(
-                        name: "FK_Friends_Users_User1Id",
-                        column: x => x.User1Id,
+                        name: "FK_Friends_Users_ReceiverId",
+                        column: x => x.ReceiverId,
                         principalTable: "Users",
                         principalColumn: "UserId");
                     table.ForeignKey(
-                        name: "FK_Friends_Users_User2Id",
-                        column: x => x.User2Id,
+                        name: "FK_Friends_Users_RequesterId",
+                        column: x => x.RequesterId,
                         principalTable: "Users",
                         principalColumn: "UserId");
                 });
@@ -110,7 +111,7 @@ namespace ShootyGameAPI.Migrations
                     ScoreValue = table.Column<int>(type: "int", nullable: false),
                     AverageAccuracy = table.Column<float>(type: "real", nullable: false),
                     RoundTime = table.Column<float>(type: "real", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GetDate()"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -136,8 +137,8 @@ namespace ShootyGameAPI.Migrations
                     ReloadSpeed = table.Column<float>(type: "real", nullable: false),
                     MagSize = table.Column<int>(type: "int", nullable: false),
                     FireRate = table.Column<int>(type: "int", nullable: false),
-                    FireMode = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    FireMode = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GetDate()"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -157,7 +158,7 @@ namespace ShootyGameAPI.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
                     WeaponId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "GetDate()"),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -179,12 +180,13 @@ namespace ShootyGameAPI.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "UserId", "CreatedAt", "Email", "IsDeleted", "Money", "PasswordHash", "PlayerTag", "Role", "UserName" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2025, 3, 6, 14, 21, 42, 70, DateTimeKind.Unspecified), "admin@mail.com", false, 0, "AQAAAAIAAYagAAAAEJMTFuO/fgInS4QHEQaSUkszZ3nuDWYQ0H4BcKRE94iHmvahKA+0Eueh5wgQKIbYuw==", "TestUser#7f3e4779", 0, "TestUser" },
-                    { 2, new DateTime(2025, 3, 6, 14, 22, 3, 780, DateTimeKind.Unspecified), "user@mail.com", false, 0, "AQAAAAIAAYagAAAAEP3n76UekjMkwna2ALIGJPoOAt/wZ8MrGQohB4/muBc1z2G4MpOPE7+wKt/JzoHFSw==", "TestUser#29818102", 1, "TestUser" }
-                });
+                columns: new[] { "UserId", "CreatedAt", "Email", "IsDeleted", "PasswordHash", "PlayerTag", "Role", "UserName" },
+                values: new object[] { 1, new DateTime(2025, 3, 6, 14, 21, 42, 70, DateTimeKind.Unspecified), "admin@mail.com", false, "AQAAAAIAAYagAAAAEJMTFuO/fgInS4QHEQaSUkszZ3nuDWYQ0H4BcKRE94iHmvahKA+0Eueh5wgQKIbYuw==", "TestUser#7f3e4779", 1, "TestUser" });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "CreatedAt", "Email", "IsDeleted", "PasswordHash", "PlayerTag", "UserName" },
+                values: new object[] { 2, new DateTime(2025, 3, 6, 14, 22, 3, 780, DateTimeKind.Unspecified), "user@mail.com", false, "AQAAAAIAAYagAAAAEP3n76UekjMkwna2ALIGJPoOAt/wZ8MrGQohB4/muBc1z2G4MpOPE7+wKt/JzoHFSw==", "TestUser#29818102", "TestUser" });
 
             migrationBuilder.InsertData(
                 table: "WeaponTypes",
@@ -199,14 +201,22 @@ namespace ShootyGameAPI.Migrations
 
             migrationBuilder.InsertData(
                 table: "Weapons",
+                columns: new[] { "WeaponId", "CreatedAt", "FireRate", "IsDeleted", "MagSize", "Name", "Price", "ReloadSpeed", "WeaponTypeId" },
+                values: new object[] { 1, new DateTime(2025, 3, 11, 12, 0, 0, 0, DateTimeKind.Unspecified), 600, false, 15, "M9", 0, 0.95f, 1 });
+
+            migrationBuilder.InsertData(
+                table: "Weapons",
                 columns: new[] { "WeaponId", "CreatedAt", "FireMode", "FireRate", "IsDeleted", "MagSize", "Name", "Price", "ReloadSpeed", "WeaponTypeId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 3, 11, 12, 0, 0, 0, DateTimeKind.Unspecified), 0, 600, false, 15, "M9", 0, 0.95f, 1 },
                     { 2, new DateTime(2025, 3, 11, 12, 2, 0, 0, DateTimeKind.Unspecified), 1, 1200, false, 18, "Tec9", 400, 1.05f, 2 },
-                    { 3, new DateTime(2025, 3, 11, 12, 4, 0, 0, DateTimeKind.Unspecified), 1, 750, false, 30, "G36", 0, 1.9f, 3 },
-                    { 4, new DateTime(2025, 3, 11, 12, 6, 0, 0, DateTimeKind.Unspecified), 0, 300, false, 15, "Scar-H", 800, 1.82f, 4 }
+                    { 3, new DateTime(2025, 3, 11, 12, 4, 0, 0, DateTimeKind.Unspecified), 1, 750, false, 30, "G36", 0, 1.9f, 3 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Weapons",
+                columns: new[] { "WeaponId", "CreatedAt", "FireRate", "IsDeleted", "MagSize", "Name", "Price", "ReloadSpeed", "WeaponTypeId" },
+                values: new object[] { 4, new DateTime(2025, 3, 11, 12, 6, 0, 0, DateTimeKind.Unspecified), 300, false, 15, "Scar-H", 800, 1.82f, 4 });
 
             migrationBuilder.InsertData(
                 table: "UserWeapons",
@@ -220,19 +230,19 @@ namespace ShootyGameAPI.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_FriendRequests_ReceiverId",
-                table: "FriendRequests",
+                name: "IX_FriendReqs_ReceiverId",
+                table: "FriendReqs",
                 column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FriendRequests_RequesterId",
-                table: "FriendRequests",
+                name: "IX_FriendReqs_RequesterId",
+                table: "FriendReqs",
                 column: "RequesterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Friends_User2Id",
+                name: "IX_Friends_ReceiverId",
                 table: "Friends",
-                column: "User2Id");
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Scores_UserId",
@@ -266,7 +276,7 @@ namespace ShootyGameAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "FriendRequests");
+                name: "FriendReqs");
 
             migrationBuilder.DropTable(
                 name: "Friends");

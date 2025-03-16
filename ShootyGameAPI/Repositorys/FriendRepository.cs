@@ -6,10 +6,10 @@ namespace ShootyGameAPI.Repositorys
 {
     public interface IFriendRepository
     {
-        public Task<List<Friend>> FindAllFriendsByUserIdAsync(int userId);
-        public Task<Friend?> FindFriendByIdAsync(int user1Id, int user2Id);
-        public Task<Friend> CreateFriendAsync(Friend newFriend);
-        public Task<Friend?> DeleteFriendByIdAsync(int user1Id, int user2Id);
+        Task<List<Friend>> FindAllFriendsByUserIdAsync(int userId);
+        Task<Friend?> FindFriendByIdAsync(int RequesterId, int ReceiverId);
+        Task<Friend> CreateFriendAsync(Friend newFriend);
+        Task<Friend?> DeleteFriendByIdAsync(int RequesterId, int ReceiverId);
     }
 
     public class FriendRepository : IFriendRepository
@@ -22,12 +22,15 @@ namespace ShootyGameAPI.Repositorys
 
         public async Task<List<Friend>> FindAllFriendsByUserIdAsync(int userId)
         {
-            return await _context.Friends.Where(x => x.User1Id == userId || x.User2Id == userId).ToListAsync();
+            return await _context.Friends.Where(x => x.RequesterId == userId || x.ReceiverId == userId).ToListAsync();
         }
 
-        public async Task<Friend?> FindFriendByIdAsync(int user1Id, int user2Id)
+        // cheacks both ways
+        public async Task<Friend?> FindFriendByIdAsync(int RequesterId, int ReceiverId)
         {
-            return await _context.Friends.FindAsync(user1Id, user2Id);
+            return await _context.Friends
+                .FirstOrDefaultAsync(x => (x.RequesterId == RequesterId && x.ReceiverId == ReceiverId)
+                || (x.RequesterId == ReceiverId && x.ReceiverId == RequesterId));
         }
 
         public async Task<Friend> CreateFriendAsync(Friend newFriend)
@@ -37,9 +40,9 @@ namespace ShootyGameAPI.Repositorys
             return newFriend;
         }
 
-        public async Task<Friend?> DeleteFriendByIdAsync(int user1Id, int user2Id)
+        public async Task<Friend?> DeleteFriendByIdAsync(int RequesterId, int ReceiverId)
         {
-            var friend = await FindFriendByIdAsync(user1Id, user2Id);
+            var friend = await FindFriendByIdAsync(RequesterId, ReceiverId);
             if (friend != null)
             {
                 _context.Friends.Remove(friend);

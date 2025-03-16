@@ -13,7 +13,7 @@ namespace ShootyGameAPI.Database
         public DbSet<Weapon> Weapons { get; set; }
         public DbSet<Score> Scores { get; set; }
         public DbSet<Friend> Friends { get; set; }
-        public DbSet<FriendRequest> FriendRequests { get; set; }
+        public DbSet<FriendReq> FriendReqs { get; set; }
         public DbSet<UserWeapon> UserWeapons { get; set; }
         public DbSet<WeaponType> WeaponTypes { get; set; }
 
@@ -44,10 +44,11 @@ namespace ShootyGameAPI.Database
             // configure global query filter for soft delete
             modelBuilder.Entity<User>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Score>().HasQueryFilter(x => !x.User.IsDeleted);
-            modelBuilder.Entity<Friend>().HasQueryFilter(x => !x.User1.IsDeleted);
-            modelBuilder.Entity<Friend>().HasQueryFilter(x => !x.User2.IsDeleted);
-            modelBuilder.Entity<FriendRequest>().HasQueryFilter(x => !x.Requester.IsDeleted);
-            modelBuilder.Entity<FriendRequest>().HasQueryFilter(x => !x.Receiver.IsDeleted);
+            modelBuilder.Entity<Friend>().HasQueryFilter(x => !x.Requester.IsDeleted);
+            modelBuilder.Entity<Friend>().HasQueryFilter(x => !x.Receiver.IsDeleted);
+            modelBuilder.Entity<FriendReq>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<FriendReq>().HasQueryFilter(x => !x.Requester.IsDeleted);
+            modelBuilder.Entity<FriendReq>().HasQueryFilter(x => !x.Receiver.IsDeleted);
             modelBuilder.Entity<UserWeapon>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<UserWeapon>().HasQueryFilter(x => !x.User.IsDeleted);
             modelBuilder.Entity<UserWeapon>().HasQueryFilter(x => !x.Weapon.IsDeleted);
@@ -64,11 +65,10 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.PasswordHash).HasColumnType("nvarchar(200)").IsRequired();
                 entity.Property(e => e.Email).HasColumnType("nvarchar(64)").IsRequired();
                 entity.Property(e => e.PlayerTag).HasColumnType("nvarchar(100)").IsRequired();
-                entity.Property(e => e.Money);
-                entity.Property(e => e.Role);
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.Money).HasDefaultValue(0);
+                entity.Property(e => e.Role).HasDefaultValue(Role.User).IsRequired();
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
-
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.HasIndex(e => e.PlayerTag).IsUnique();
             });
@@ -82,8 +82,8 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.ReloadSpeed).IsRequired();
                 entity.Property(e => e.MagSize).IsRequired();
                 entity.Property(e => e.FireRate).IsRequired();
-                entity.Property(e => e.FireMode).IsRequired();
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.FireMode).HasDefaultValue(FireMode.Single).IsRequired();
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
             });
 
@@ -92,7 +92,7 @@ namespace ShootyGameAPI.Database
                 entity.HasKey(e => e.WeaponTypeId);
                 entity.Property(e => e.Name).HasColumnType("nvarchar(64)").IsRequired();
                 entity.Property(e => e.EquipmentSlot).IsRequired();
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
             });
 
@@ -103,7 +103,7 @@ namespace ShootyGameAPI.Database
 
                 entity.Property(e => e.UserId).IsRequired();
                 entity.Property(e => e.WeaponId).IsRequired();
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
 
                 // define foreign keys
@@ -119,42 +119,43 @@ namespace ShootyGameAPI.Database
             modelBuilder.Entity<Friend>(entity =>
             {
                 // define composite key
-                entity.HasKey(e => new { e.User1Id, e.User2Id });
+                entity.HasKey(e => new { e.RequesterId, e.ReceiverId });
 
-                entity.Property(e => e.User1Id).IsRequired();
-                entity.Property(e => e.User2Id).IsRequired();
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.RequesterId).IsRequired();
+                entity.Property(e => e.ReceiverId).IsRequired();
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
 
                 // define foreign keys
-                entity.HasOne(e => e.User1)
-                    .WithMany(e => e.Friends1)
-                    .HasForeignKey(e => e.User1Id)
-                    .OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(e => e.User2)
-                    .WithMany(e => e.Friends2)
-                    .HasForeignKey(e => e.User2Id)
-                    .OnDelete(DeleteBehavior.NoAction);
-            });
-
-            modelBuilder.Entity<FriendRequest>(entity =>
-            {
-                entity.HasKey(e => e.FriendRequestId);
-                entity.Property(e => e.RequesterId).IsRequired();
-                entity.Property(e => e.ReceiverId).IsRequired();
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-                entity.Property(e => e.ResponseAt).HasColumnType("datetime");
-                entity.Property(e => e.Status).IsRequired();
-
-                // define foreign keys
                 entity.HasOne(e => e.Requester)
-                    .WithMany(e => e.FriendRequests1)
+                    .WithMany(e => e.FriendsAsRequester)
                     .HasForeignKey(e => e.RequesterId)
                     .OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasOne(e => e.Receiver)
-                    .WithMany(e => e.FriendRequests2)
+                    .WithMany(e => e.FriendsAsReceiver)
+                    .HasForeignKey(e => e.ReceiverId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<FriendReq>(entity =>
+            {
+                entity.HasKey(e => e.FriendReqId);
+                entity.Property(e => e.RequesterId).IsRequired();
+                entity.Property(e => e.ReceiverId).IsRequired();
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
+                entity.Property(e => e.ResponseAt).HasColumnType("datetime");
+                entity.Property(e => e.Status).HasDefaultValue(FriendReqStatus.Pending).IsRequired();
+                entity.Property(e => e.IsDeleted).HasColumnType("bit");
+
+                // define foreign keys
+                entity.HasOne(e => e.Requester)
+                    .WithMany(e => e.SentFriendReqs)
+                    .HasForeignKey(e => e.RequesterId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(e => e.Receiver)
+                    .WithMany(e => e.ReceivedFriendReqs)
                     .HasForeignKey(e => e.ReceiverId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
@@ -166,7 +167,7 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.ScoreValue).IsRequired();
                 entity.Property(e => e.AverageAccuracy).IsRequired();
                 entity.Property(e => e.RoundTime).IsRequired();
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
 
                 // define foreign key
@@ -183,7 +184,7 @@ namespace ShootyGameAPI.Database
                     PasswordHash = "AQAAAAIAAYagAAAAEJMTFuO/fgInS4QHEQaSUkszZ3nuDWYQ0H4BcKRE94iHmvahKA+0Eueh5wgQKIbYuw==",
                     PlayerTag = "TestUser#7f3e4779",
                     Email = "admin@mail.com",
-                    Role = 0,
+                    Role = (Role)1,
                     CreatedAt = new DateTime(2025, 03, 06, 14, 21, 42, 070)
                 },
                 new User
@@ -193,7 +194,7 @@ namespace ShootyGameAPI.Database
                     PasswordHash = "AQAAAAIAAYagAAAAEP3n76UekjMkwna2ALIGJPoOAt/wZ8MrGQohB4/muBc1z2G4MpOPE7+wKt/JzoHFSw==",
                     PlayerTag = "TestUser#29818102",
                     Email = "user@mail.com",
-                    Role = (Role)1,
+                    Role = 0,
                     CreatedAt = new DateTime(2025, 03, 06, 14, 22, 03, 780)
                 });
 

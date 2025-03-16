@@ -41,7 +41,7 @@ namespace ShootyGameAPITests.RepositoryTests
                 UserName = "TestUser",
                 PasswordHash = "Passw0rd",
                 PlayerTag = "TestUser#2",
-                Email = "User1@mail.com"
+                Email = "Requester@mail.com"
             });
             _context.Users.Add(new User
             {
@@ -49,23 +49,23 @@ namespace ShootyGameAPITests.RepositoryTests
                 UserName = "TestUser",
                 PasswordHash = "Passw0rd",
                 PlayerTag = "TestUser#3",
-                Email = "User2@mail.com"
+                Email = "Receiver@mail.com"
             });
 
             _context.Friends.Add(new Friend
             {
-                User1Id = 1,
-                User2Id = 2
+                RequesterId = 1,
+                ReceiverId = 2
             });
             _context.Friends.Add(new Friend
             {
-                User1Id = 1,
-                User2Id = 3
+                RequesterId = 1,
+                ReceiverId = 3
             });
             _context.Friends.Add(new Friend
             {
-                User1Id = 2,
-                User2Id = 3
+                RequesterId = 2,
+                ReceiverId = 3
             });
             await _context.SaveChangesAsync();
 
@@ -101,8 +101,8 @@ namespace ShootyGameAPITests.RepositoryTests
 
             _context.Friends.Add(new Friend
             {
-                User1Id = 1,
-                User2Id = 2
+                RequesterId = 1,
+                ReceiverId = 2
             });
             await _context.SaveChangesAsync();
 
@@ -112,8 +112,8 @@ namespace ShootyGameAPITests.RepositoryTests
             // Assert
             Assert.NotNull(result);
             Assert.IsType<Friend>(result);
-            Assert.Equal(1, result?.User1Id);
-            Assert.Equal(2, result?.User2Id);
+            Assert.Equal(1, result?.RequesterId);
+            Assert.Equal(2, result?.ReceiverId);
         }
 
         [Fact]
@@ -137,8 +137,8 @@ namespace ShootyGameAPITests.RepositoryTests
 
             Friend newFriend = new()
             {
-                User1Id = 1,
-                User2Id = 2
+                RequesterId = 1,
+                ReceiverId = 2
             };
 
             // Act
@@ -147,8 +147,8 @@ namespace ShootyGameAPITests.RepositoryTests
             // Assert
             Assert.NotNull(result);
             Assert.IsType<Friend>(result);
-            Assert.Equal(1, result.User1Id);
-            Assert.Equal(2, result.User2Id);
+            Assert.Equal(1, result.RequesterId);
+            Assert.Equal(2, result.ReceiverId);
         }
 
         [Fact]
@@ -159,8 +159,8 @@ namespace ShootyGameAPITests.RepositoryTests
 
             Friend existingFriend = new()
             {
-                User1Id = 1,
-                User2Id = 2
+                RequesterId = 1,
+                ReceiverId = 2
             };
 
             await _friendRepository.CreateFriendAsync(existingFriend);
@@ -181,8 +181,8 @@ namespace ShootyGameAPITests.RepositoryTests
 
             var friend = new Friend
             {
-                User1Id = 1,
-                User2Id = 2
+                RequesterId = 1,
+                ReceiverId = 2
             };
 
             _context.Friends.Add(friend);
@@ -194,8 +194,8 @@ namespace ShootyGameAPITests.RepositoryTests
             // Assert
             Assert.NotNull(result);
             Assert.IsType<Friend>(result);
-            Assert.Equal(1, result.User1Id);
-            Assert.Equal(2, result.User2Id);
+            Assert.Equal(1, result.RequesterId);
+            Assert.Equal(2, result.ReceiverId);
         }
 
         [Fact]

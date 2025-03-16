@@ -24,7 +24,9 @@ namespace ShootyGameAPI.Repositorys
 
         public async Task<List<Weapon>> GetAllWeaponsAsync()
         {
-            return await _context.Weapons.ToListAsync();
+            return await _context.Weapons
+                .Include(x => x.WeaponType)
+                .ToListAsync();
         }
 
         public async Task<Weapon?> FindWeaponByIdAsync(int id)

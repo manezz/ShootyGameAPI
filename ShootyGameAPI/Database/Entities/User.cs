@@ -11,17 +11,17 @@ namespace ShootyGameAPI.Database.Entities
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public string PlayerTag { get; set; }
-        public int Money { get; set; } = 0;
-        public Role Role { get; set; } = Role.User;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public int Money { get; set; }
+        public Role Role { get; set; }
+        public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
 
         // Navigation properties
         public List<UserWeapon> UserWeapons { get; set; }
         public List<Score> Scores { get; set; }
-        public List<Friend> Friends1 { get; set; }
-        public List<Friend> Friends2 { get; set; }
-        public List<FriendRequest> FriendRequests1 { get; set; }
-        public List<FriendRequest> FriendRequests2 { get; set; }
+        public List<Friend> FriendsAsRequester { get; set; }
+        public List<Friend> FriendsAsReceiver { get; set; }
+        public List<FriendReq> SentFriendReqs { get; set; }
+        public List<FriendReq> ReceivedFriendReqs { get; set; }
     }
 }

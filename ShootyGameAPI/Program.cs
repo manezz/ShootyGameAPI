@@ -29,9 +29,10 @@ builder.Services.AddScoped<IWeaponService, WeaponService>();
 builder.Services.AddScoped<IScoreRepository, ScoreRepository>();
 builder.Services.AddScoped<IScoreService, ScoreService>();
 
-builder.Services.AddScoped<IUserWeaponRepository, UserWeaponRepository>();
-
 builder.Services.AddScoped<IFriendRequestRepository, FriendRequestRepository>();
+builder.Services.AddScoped<IFriendReqService, FriendReqService>();
+
+builder.Services.AddScoped<IUserWeaponRepository, UserWeaponRepository>();
 
 builder.Services.AddScoped<IFriendRepository, FriendRepository>();
 

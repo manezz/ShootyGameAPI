@@ -14,7 +14,7 @@ namespace ShootyGameAPI.Database.Entities
         public int MagSize { get; set; }
         public int FireRate { get; set; }
         public FireMode FireMode { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
         public bool IsDeleted { get; set; }
 
         // Navigation properties
