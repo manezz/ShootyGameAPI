@@ -33,7 +33,13 @@ namespace ShootyGameAPITests.ServiceTests
             {
                 ScoreId = 1,
                 ScoreValue = 100,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com"
+                }
             };
 
             _scoreRepositoryMock
@@ -60,13 +66,25 @@ namespace ShootyGameAPITests.ServiceTests
                 {
                     ScoreId = 1,
                     ScoreValue = 100,
-                    UserId = 1
+                    User = new User
+                    {
+                        UserId = 1,
+                        UserName = "TestUser",
+                        PlayerTag = "TestUser#1",
+                        Email = "admin@mail.com"
+                    }
                 },
                 new Score
                 {
                     ScoreId = 2,
                     ScoreValue = 200,
-                    UserId = 2
+                    User = new User
+                    {
+                        UserId = 1,
+                        UserName = "TestUser",
+                        PlayerTag = "TestUser#1",
+                        Email = "admin@mail.com"
+                    }
                 }
             };
 
@@ -93,7 +111,13 @@ namespace ShootyGameAPITests.ServiceTests
             {
                 ScoreId = scoreId,
                 ScoreValue = 100,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com"
+                }
             };
 
             _scoreRepositoryMock
@@ -132,6 +156,7 @@ namespace ShootyGameAPITests.ServiceTests
         {
             // Arrange
             var scoreId = 1;
+
             var updatedScoreRequest = new ScoreRequest
             {
                 ScoreValue = 150,
@@ -142,7 +167,13 @@ namespace ShootyGameAPITests.ServiceTests
             {
                 ScoreId = scoreId,
                 ScoreValue = 150,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com"
+                }
             };
 
             _scoreRepositoryMock
@@ -191,7 +222,13 @@ namespace ShootyGameAPITests.ServiceTests
             {
                 ScoreId = scoreId,
                 ScoreValue = 100,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com"
+                }
             };
 
             _scoreRepositoryMock

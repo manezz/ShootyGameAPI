@@ -99,11 +99,33 @@ namespace ShootyGameAPITests.RepositoryTests
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
+            var users = new List<User>
+            {
+                new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#2",
+                    Email = "user@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
+            };
+
             _context.Friends.Add(new Friend
             {
                 RequesterId = 1,
                 ReceiverId = 2
             });
+
+            await _context.Users.AddRangeAsync(users);
             await _context.SaveChangesAsync();
 
             // Act
@@ -179,12 +201,33 @@ namespace ShootyGameAPITests.RepositoryTests
             // Arrange
             await _context.Database.EnsureDeletedAsync();
 
+            var users = new List<User>
+            {
+                new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#2",
+                    Email = "user@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
+            };
+
             var friend = new Friend
             {
                 RequesterId = 1,
                 ReceiverId = 2
             };
 
+            await _context.Users.AddRangeAsync(users);
             _context.Friends.Add(friend);
             await _context.SaveChangesAsync();
 

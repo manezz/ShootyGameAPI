@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using ShootyGameAPI.Authorization;
 using ShootyGameAPI.Database.Entities;
 using ShootyGameAPI.DTOs;

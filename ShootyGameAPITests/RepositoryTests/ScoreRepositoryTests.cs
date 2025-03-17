@@ -92,7 +92,14 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 ScoreId = 1,
                 ScoreValue = 100,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
             });
             await _context.SaveChangesAsync();
 
@@ -129,7 +136,14 @@ namespace ShootyGameAPITests.RepositoryTests
             Score newScore = new()
             {
                 ScoreValue = 150,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
             };
 
             // Act
@@ -174,7 +188,14 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 ScoreId = 1,
                 ScoreValue = 100,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
             };
 
             _context.Scores.Add(score);
@@ -226,7 +247,14 @@ namespace ShootyGameAPITests.RepositoryTests
             {
                 ScoreId = 1,
                 ScoreValue = 100,
-                UserId = 1
+                User = new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
             };
 
             _context.Scores.Add(score);

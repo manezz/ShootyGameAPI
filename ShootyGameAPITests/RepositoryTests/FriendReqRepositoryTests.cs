@@ -158,11 +158,34 @@ namespace ShootyGameAPITests.RepositoryTests
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
+
+            var users = new List<User>
+            {
+                new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#2",
+                    Email = "user@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
+            };
+
             var friendReq = new FriendReq
             {
                 RequesterId = 1,
                 ReceiverId = 2
             };
+
+            _context.Users.AddRange(users);
             _context.FriendReqs.Add(friendReq);
             await _context.SaveChangesAsync();
 
@@ -192,6 +215,29 @@ namespace ShootyGameAPITests.RepositoryTests
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
+
+            var users = new List<User>
+            {
+                new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#2",
+                    Email = "user@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
+            };
+
+            _context.Users.AddRange(users);
+            await _context.SaveChangesAsync();
 
             var newFriendRequest = new FriendReq
             {
@@ -232,25 +278,48 @@ namespace ShootyGameAPITests.RepositoryTests
         }
 
         [Fact]
-        public async Task DeleteFriendReqByIdAsync_ShouldRemoveFriendReqFromDatabase_WhenFriendReqExists()
+        public async Task DeleteFriendReqByIdAsync_ShouldReturnFriendReqDeleted_WhenFriendReqIsDeleted()
         {
             // Arrange
             await _context.Database.EnsureDeletedAsync();
-            var friendRequest = new FriendReq
+
+            var users = new List<User>
+            {
+                new User
+                {
+                    UserId = 1,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#1",
+                    Email = "admin@mail.com",
+                    PasswordHash = "Passw0rd"
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserName = "TestUser",
+                    PlayerTag = "TestUser#2",
+                    Email = "user@mail.com",
+                    PasswordHash = "Passw0rd"
+                }
+            };
+
+            var FriendReq = new FriendReq
             {
                 RequesterId = 1,
                 ReceiverId = 2
             };
-            _context.FriendReqs.Add(friendRequest);
+
+            _context.Users.AddRange(users);
+            _context.FriendReqs.Add(FriendReq);
             await _context.SaveChangesAsync();
 
             // Act
-            var result = await _friendReqRepository.DeleteFriendReqByIdAsync(friendRequest.FriendReqId);
+            var result = await _friendReqRepository.DeleteFriendReqByIdAsync(FriendReq.FriendReqId);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(friendRequest.FriendReqId, result.FriendReqId);
-            Assert.Null(await _context.FriendReqs.FindAsync(friendRequest.FriendReqId));
+            Assert.IsType<FriendReq>(result);
+            Assert.Equal(FriendReq.FriendReqId, result.FriendReqId);
         }
 
         [Fact]

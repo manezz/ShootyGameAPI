@@ -26,12 +26,15 @@ namespace ShootyGameAPI.Repositorys
         {
             return await _context.Scores
                 .OrderByDescending(x => x.ScoreValue)
+                .Include(x => x.User)
                 .ToListAsync();
         }
 
         public async Task<Score?> FindScoreByIdAsync(int scoreId)
         {
-            return await _context.Scores.FindAsync(scoreId);
+            return await _context.Scores
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.ScoreId == scoreId);
         }
 
         public async Task<Score?> CreateScoreAsync(Score newScore)
