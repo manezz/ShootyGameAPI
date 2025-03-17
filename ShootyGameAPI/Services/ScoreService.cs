@@ -32,7 +32,12 @@ namespace ShootyGameAPI.Services
                 ScoreValue = score.ScoreValue,
                 AverageAccuracy = score.AverageAccuracy,
                 RoundTime = score.RoundTime,
-                UserId = score.UserId
+                User = new Score_UserResponse
+                {
+                    UserId = score.UserId,
+                    UserName = score.User.UserName,
+                    PlayerTag = score.User.PlayerTag
+                }
             };
         }
 

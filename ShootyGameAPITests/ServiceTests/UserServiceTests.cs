@@ -105,14 +105,31 @@ namespace ShootyGameAPITests.ServiceTests
                 WeaponId = 2
             };
 
+            Weapon weapon = new Weapon
+            {
+                WeaponId = 2,
+                Name = "TestWeapon",
+                Price = 100,
+                ReloadSpeed = 1.5f,
+                MagSize = 30,
+                FireRate = 600,
+                FireMode = FireMode.Auto,
+                WeaponType = new()
+            };
+
             var user = new User
             {
                 UserId = 1,
                 UserName = "TestUser",
                 Email = "user@mail.dk",
                 Role = Role.User,
+                Money = 1000,
                 UserWeapons = new(),
-                Scores = new()
+                Scores = new(),
+                FriendsAsRequester = new(),
+                FriendsAsReceiver = new(),
+                SentFriendReqs = new(),
+                ReceivedFriendReqs = new()
             };
 
             var userWeapon = new UserWeapon
@@ -124,6 +141,10 @@ namespace ShootyGameAPITests.ServiceTests
             _userRepositoryMock
                 .Setup(x => x.FindUserByIdAsync(userWeaponRequest.UserId))
                 .ReturnsAsync(user);
+
+            _weaponRepositoryMock
+                .Setup(x => x.FindWeaponByIdAsync(userWeaponRequest.WeaponId))
+                .ReturnsAsync(weapon);
 
             _userWeaponRepositoryMock
                 .Setup(x => x.CreateUserWeaponAsync(It.IsAny<UserWeapon>()))
@@ -172,7 +193,11 @@ namespace ShootyGameAPITests.ServiceTests
                     Email = "admin@mail.dk",
                     Role = Role.Admin,
                     UserWeapons = new(),
-                    Scores = new()
+                    Scores = new(),
+                    FriendsAsRequester = new(),
+                    FriendsAsReceiver = new(),
+                    SentFriendReqs = new(),
+                    ReceivedFriendReqs = new()
                 },
                 new()
                 {
@@ -181,7 +206,11 @@ namespace ShootyGameAPITests.ServiceTests
                     Email = "user@mail.dk",
                     Role = Role.User,
                     UserWeapons = new(),
-                    Scores = new()
+                    Scores = new(),
+                    FriendsAsRequester = new(),
+                    FriendsAsReceiver = new(),
+                    SentFriendReqs = new(),
+                    ReceivedFriendReqs = new()
                 },
             };
 
@@ -230,7 +259,11 @@ namespace ShootyGameAPITests.ServiceTests
                 Email = "admin@mail.dk",
                 Role = Role.Admin,
                 UserWeapons = new(),
-                Scores = new()
+                Scores = new(),
+                FriendsAsRequester = new(),
+                FriendsAsReceiver = new(),
+                SentFriendReqs = new(),
+                ReceivedFriendReqs = new()
             };
 
             _userRepositoryMock
@@ -284,7 +317,11 @@ namespace ShootyGameAPITests.ServiceTests
                 Email = "user@mail.dk",
                 Role = Role.User,
                 UserWeapons = new(),
-                Scores = new()
+                Scores = new(),
+                FriendsAsRequester = new(),
+                FriendsAsReceiver = new(),
+                SentFriendReqs = new(),
+                ReceivedFriendReqs = new()
             };
 
             _userRepositoryMock
@@ -353,7 +390,11 @@ namespace ShootyGameAPITests.ServiceTests
                 Email = updateUser.Email,
                 Role = updateUser.Role,
                 UserWeapons = new(),
-                Scores = new()
+                Scores = new(),
+                FriendsAsRequester = new(),
+                FriendsAsReceiver = new(),
+                SentFriendReqs = new(),
+                ReceivedFriendReqs = new()
             };
 
             _userRepositoryMock
@@ -418,7 +459,11 @@ namespace ShootyGameAPITests.ServiceTests
                 Email = "admin@mail.dk",
                 Role = Role.Admin,
                 UserWeapons = new(),
-                Scores = new()
+                Scores = new(),
+                FriendsAsRequester = new(),
+                FriendsAsReceiver = new(),
+                SentFriendReqs = new(),
+                ReceivedFriendReqs = new()
             };
 
             _userRepositoryMock

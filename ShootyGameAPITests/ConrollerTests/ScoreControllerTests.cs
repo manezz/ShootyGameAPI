@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using ShootyGameAPI.Controllers;
 using ShootyGameAPI.DTOs;
+using ShootyGameAPI.Helpers;
 using ShootyGameAPI.Services;
 
 namespace ShootyGameAPITests.ConrollerTests
@@ -34,13 +35,11 @@ namespace ShootyGameAPITests.ConrollerTests
                 {
                     ScoreId = 1,
                     ScoreValue = 100,
-                    UserId = 1
                 },
                 new ScoreResponse
                 {
                     ScoreId = 2,
                     ScoreValue = 150,
-                    UserId = 2
                 }
             };
 
@@ -96,8 +95,7 @@ namespace ShootyGameAPITests.ConrollerTests
             var scoreResponse = new ScoreResponse
             {
                 ScoreId = scoreId,
-                ScoreValue = 100,
-                UserId = 1
+                ScoreValue = 100
             };
 
             _scoreServiceMock
@@ -145,7 +143,6 @@ namespace ShootyGameAPITests.ConrollerTests
             Assert.Equal(500, result.StatusCode);
         }
 
-        // Test CreateScoreAsync
         [Fact]
         public async Task CreateScoreAsync_ShouldReturnStatusCode200_WhenScoreIsSuccessfullyCreated()
         {
@@ -158,13 +155,22 @@ namespace ShootyGameAPITests.ConrollerTests
             var scoreResponse = new ScoreResponse
             {
                 ScoreId = 1,
-                ScoreValue = 100,
-                UserId = 1
+                ScoreValue = 100
+            };
+
+            var userResponse = new UserResponse
+            {
+                UserId = 1,
+                Email = "admin@mail.com",
+                Role = Role.Admin
             };
 
             _scoreServiceMock
                 .Setup(x => x.CreateScoreAsync(It.IsAny<ScoreRequest>()))
                 .ReturnsAsync(scoreResponse);
+
+            httpContext.Items["User"] = userResponse;
+
 
             // Act
             var result = (IStatusCodeActionResult)await _scoreController.CreateScoreAsync(scoreRequest);
@@ -183,9 +189,18 @@ namespace ShootyGameAPITests.ConrollerTests
                 UserId = 1
             };
 
+            var userResponse = new UserResponse
+            {
+                UserId = 1,
+                Email = "admin@mail.com",
+                Role = Role.Admin
+            };
+
             _scoreServiceMock
                 .Setup(x => x.CreateScoreAsync(It.IsAny<ScoreRequest>()))
                 .ThrowsAsync(new Exception("This is an exception"));
+
+            httpContext.Items["User"] = userResponse;
 
             // Act
             var result = (IStatusCodeActionResult)await _scoreController.CreateScoreAsync(scoreRequest);
@@ -194,7 +209,6 @@ namespace ShootyGameAPITests.ConrollerTests
             Assert.Equal(500, result.StatusCode);
         }
 
-        // Test UpdateScoreByIdAsync
         [Fact]
         public async Task UpdateScoreByIdAsync_ShouldReturnStatusCode200_WhenScoreIsUpdated()
         {
@@ -209,7 +223,6 @@ namespace ShootyGameAPITests.ConrollerTests
             {
                 ScoreId = scoreId,
                 ScoreValue = 150,
-                UserId = 1
             };
 
             _scoreServiceMock
@@ -245,7 +258,6 @@ namespace ShootyGameAPITests.ConrollerTests
             Assert.Equal(404, result.StatusCode);
         }
 
-        // Test DeleteScoreByIdAsync
         [Fact]
         public async Task DeleteScoreByIdAsync_ShouldReturnStatusCode200_WhenScoreIsDeleted()
         {
@@ -255,7 +267,6 @@ namespace ShootyGameAPITests.ConrollerTests
             {
                 ScoreId = scoreId,
                 ScoreValue = 100,
-                UserId = 1
             };
 
             _scoreServiceMock
