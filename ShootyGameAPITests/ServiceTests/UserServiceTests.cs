@@ -86,7 +86,7 @@ namespace ShootyGameAPITests.ServiceTests
 
             _userRepositoryMock
                 .Setup(x => x.FindUserByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((User)null!);
+                .ReturnsAsync(() => null!);
 
             // Act
             var result = await _userService.AuthenticateAsync(request);
@@ -170,7 +170,7 @@ namespace ShootyGameAPITests.ServiceTests
 
             _userWeaponRepositoryMock
                 .Setup(x => x.CreateUserWeaponAsync(It.IsAny<UserWeapon>()))
-                .ReturnsAsync((UserWeapon)null!);
+                .ReturnsAsync(() => null!);
 
             // Act
             var result = await _userService.AddWeaponToUserAsync(userWeaponRequest);
@@ -178,6 +178,175 @@ namespace ShootyGameAPITests.ServiceTests
             // Assert
             Assert.Null(result);
         }
+
+        [Fact]
+        public async Task FindFriendByIdAsync_FriendExists_ReturnsFriendResponse()
+        {
+            // Arrange
+            var requesterId = 1;
+            var receiverId = 2;
+            var friend = new Friend
+            {
+                RequesterId = requesterId,
+                ReceiverId = receiverId
+            };
+            _friendRepositoryMock
+                .Setup(repo => repo.FindFriendByIdAsync(requesterId, receiverId))
+                .ReturnsAsync(friend);
+
+            // Act
+            var result = await _userService.FindFriendByIdAsync(requesterId, receiverId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(requesterId, result.RequesterId);
+            Assert.Equal(receiverId, result.ReceiverId);
+        }
+
+        [Fact]
+        public async Task FindFriendByIdAsync_FriendNotFound_ReturnsNull()
+        {
+            // Arrange
+            var requesterId = 1;
+            var receiverId = 2;
+            _friendRepositoryMock
+                .Setup(repo => repo.FindFriendByIdAsync(requesterId, receiverId))
+                .ReturnsAsync(() => null);
+
+            // Act
+            var result = await _userService.FindFriendByIdAsync(requesterId, receiverId);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task AddFriendToUserAsync_FriendRequestCreated_ReturnsUserResponse()
+        {
+            // Arrange
+            var userId = 1;
+
+            var user = new User
+            {
+                UserId = userId,
+                UserName = "TestUser",
+                Email = "admin@mail.com",
+                Role = Role.Admin,
+                UserWeapons = new(),
+                Scores = new(),
+                FriendsAsRequester = new(),
+                FriendsAsReceiver = new(),
+                SentFriendReqs = new(),
+                ReceivedFriendReqs = new()
+            };
+
+            var friendRequest = new FriendRequest
+            {
+                RequesterId = 1,
+                ReceiverId = 2
+            };
+
+            var friend = new Friend
+            {
+                RequesterId = 1,
+                ReceiverId = 2,
+                Receiver = new(),
+                Requester = new()
+            };
+
+            _friendRepositoryMock
+                .Setup(repo => repo.CreateFriendAsync(It.IsAny<Friend>()))
+                .ReturnsAsync(friend);
+
+            _userRepositoryMock
+                .Setup(repo => repo.FindUserByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            // Act
+            var result = await _userService.AddFriendToUserAsync(userId, friendRequest);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(userId, result.UserId);
+        }
+
+        [Fact]
+        public async Task AddFriendToUserAsync_FriendRequestNotCreated_ReturnsNull()
+        {
+            // Arrange
+            var userId = 1;
+            var friendRequest = new FriendRequest { RequesterId = 1, ReceiverId = 2 };
+            _friendRepositoryMock
+                .Setup(repo => repo.CreateFriendAsync(It.IsAny<Friend>()))
+                .ReturnsAsync(() => null!);
+
+            // Act
+            var result = await _userService.AddFriendToUserAsync(userId, friendRequest);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task RemoveFriendFromUserByIdAsync_FriendRemoved_ReturnsUserResponse()
+        {
+            // Arrange
+            var requesterId = 1;
+            var receiverId = 2;
+
+            var user = new User
+            {
+                UserId = requesterId,
+                UserName = "TestUser",
+                Email = "admin@mail.com",
+                Role = Role.Admin,
+                UserWeapons = new(),
+                Scores = new(),
+                FriendsAsRequester = new(),
+                FriendsAsReceiver = new(),
+                SentFriendReqs = new(),
+                ReceivedFriendReqs = new()
+            };
+
+            var friend = new Friend
+            {
+                RequesterId = requesterId,
+                ReceiverId = receiverId
+            };
+
+            _friendRepositoryMock
+                .Setup(repo => repo.DeleteFriendByIdAsync(requesterId, receiverId))
+                .ReturnsAsync(friend);
+
+            _userRepositoryMock
+                .Setup(repo => repo.FindUserByIdAsync(requesterId))
+                .ReturnsAsync(user);
+
+            // Act
+            var result = await _userService.RemoveFriendFromUserByIdAsync(requesterId, receiverId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(requesterId, result.UserId);
+        }
+
+        [Fact]
+        public async Task RemoveFriendFromUserByIdAsync_FriendNotRemoved_ReturnsNull()
+        {
+            // Arrange
+            var requesterId = 1;
+            var receiverId = 2;
+            _friendRepositoryMock
+                .Setup(repo => repo.DeleteFriendByIdAsync(requesterId, receiverId))
+                .ReturnsAsync(() => null);
+
+            // Act
+            var result = await _userService.RemoveFriendFromUserByIdAsync(requesterId, receiverId);
+
+            // Assert
+            Assert.Null(result);
+        }
+
 
 
         [Fact]

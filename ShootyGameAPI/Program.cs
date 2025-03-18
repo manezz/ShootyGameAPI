@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ShootyGameAPI.Authorization;
@@ -46,10 +46,23 @@ builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.Configure<AppSettings>(options =>
+{
+    // standard way to get secret from appsettings.json
+    builder.Configuration.GetSection("AppSettings").Bind(options);
+
+    // check if secret is set in environment variable
+    var secretFromEnv = builder.Configuration["ShootyGameAPI_JWT_SECRET"];
+
+    // if secret is set in environment variable, use it instead
+    if (!string.IsNullOrWhiteSpace(secretFromEnv))
+    {
+        options.Secret = secretFromEnv;
+        Console.WriteLine("JWT secret from Env found");
+    }
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
