@@ -26,7 +26,7 @@ namespace ShootyGameAPITests.ServiceTests
                     new()
                     {
                         WeaponTypeId = 1,
-                        Name = "Asualt Rifle",
+                        Name = "Assault Rifle",
                         EquipmentSlot = EquipmentSlot.Primary
                     },
                     new()
@@ -78,7 +78,7 @@ namespace ShootyGameAPITests.ServiceTests
             WeaponType weaponType = new()
             {
                 WeaponTypeId = weaponTypeId,
-                Name = "Asualt Rifle",
+                Name = "Assault Rifle",
                 EquipmentSlot = EquipmentSlot.Primary
             };
 
@@ -119,7 +119,7 @@ namespace ShootyGameAPITests.ServiceTests
             // Arrange
             WeaponTypeRequest newWeaponType = new()
             {
-                Name = "Asualt Rifle",
+                Name = "Assault Rifle",
                 EquipmentSlot = EquipmentSlot.Primary
             };
             int weaponTypeId = 1;
@@ -127,7 +127,7 @@ namespace ShootyGameAPITests.ServiceTests
             WeaponType weaponType = new()
             {
                 WeaponTypeId = weaponTypeId,
-                Name = "Asualt Rifle",
+                Name = "Assault Rifle",
                 EquipmentSlot = EquipmentSlot.Primary
             };
 
@@ -151,7 +151,7 @@ namespace ShootyGameAPITests.ServiceTests
             // Arrange
             WeaponTypeRequest newWeaponType = new()
             {
-                Name = "Asualt Rifle",
+                Name = "Assault Rifle",
                 EquipmentSlot = EquipmentSlot.Primary
             };
 
@@ -172,7 +172,7 @@ namespace ShootyGameAPITests.ServiceTests
             // Arrange
             WeaponTypeRequest updateWeaponType = new()
             {
-                Name = "Asualt Rifle",
+                Name = "Assault Rifle",
                 EquipmentSlot = EquipmentSlot.Primary
             };
             int weaponTypeId = 1;
@@ -205,7 +205,7 @@ namespace ShootyGameAPITests.ServiceTests
             // Arrange
             WeaponTypeRequest updateWeaponType = new()
             {
-                Name = "Asualt Rifle",
+                Name = "Assault Rifle",
                 EquipmentSlot = EquipmentSlot.Primary
             };
             int weaponTypeId = 1;
@@ -230,7 +230,7 @@ namespace ShootyGameAPITests.ServiceTests
             WeaponType weaponType = new()
             {
                 WeaponTypeId = weaponTypeId,
-                Name = "Asualt Rifle",
+                Name = "Assault Rifle",
                 EquipmentSlot = EquipmentSlot.Primary
             };
 

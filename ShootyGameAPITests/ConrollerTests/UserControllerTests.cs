@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using ShootyGameAPI.Controllers;
+using ShootyGameAPI.Database.Entities;
 using ShootyGameAPI.DTOs;
 using ShootyGameAPI.Helpers;
 using ShootyGameAPI.Services;
@@ -169,6 +171,93 @@ namespace ShootyGameAPITests.ConrollerTests
         }
 
         [Fact]
+        public async Task RemoveWeaponFromUserAsync_ShouldReturnStatusCode200_WhenWeaponIsRemovedFromUser()
+        {
+            // Arrange
+            int userId = 1;
+            int weaponId = 1;
+
+            var userResponseWithWeapons = new UserResponse
+            {
+                UserId = userId,
+                Email = "admin@mail.com",
+                Role = Role.Admin,
+                Weapons = new()
+                {
+                    new User_WeaponsResponse
+                    {
+                        WeaponId = weaponId,
+                        Name = "Pistol",
+                    }
+                },
+            };
+
+            _userServiceMock
+                .Setup(x => x.RemoveWeaponFromUserByIdAsync(userId, weaponId))
+                .ReturnsAsync(userResponseWithWeapons);
+
+            // Set the current user in HttpContext
+            httpContext.Items["User"] = userResponseWithWeapons;
+
+            // Act
+            var result = (IStatusCodeActionResult)await _userController.RemoveWeaponFromUserAsync(userId, weaponId);
+
+            // Assert
+            Assert.Equal(200, result.StatusCode);
+        }
+
+
+        [Fact]
+        public async Task RemoveWeaponFromUserAsync_ShouldReturnStatusCode401_WhenUnauthorized()
+        {
+            // Arrange
+            int userId = 1;
+            int weaponId = 1;
+
+            var unauthorizedUser = new UserResponse
+            {
+                UserId = 2,
+                Email = "user@mail.com",
+                Role = Role.User
+            };
+
+            httpContext.Items["User"] = unauthorizedUser;
+
+            // Act
+            var result = (IStatusCodeActionResult)await _userController.RemoveWeaponFromUserAsync(userId, weaponId);
+
+            // Assert
+            Assert.Equal(401, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task RemoveWeaponFromUserAsync_ShouldReturnStatusCode404_WhenUserNotFound()
+        {
+            // Arrange
+            int userId = 1;
+            int weaponId = 1;
+
+            _userServiceMock
+                .Setup(x => x.RemoveFriendFromUserByIdAsync(userId, weaponId))
+                .ReturnsAsync(() => null);
+
+            var userResponse = new UserResponse
+            {
+                UserId = userId,
+                Email = "admin@mail.com",
+                Role = Role.Admin
+            };
+
+            httpContext.Items["User"] = userResponse;
+
+            // Act
+            var result = (IStatusCodeActionResult)await _userController.RemoveWeaponFromUserAsync(userId, weaponId);
+
+            // Assert
+            Assert.Equal(404, result.StatusCode);
+        }
+
+        [Fact]
         public async Task AddWeaponToUserAsync_ShouldReturnStatusCode404_WhenUserNotFound()
         {
             // Arrange
@@ -230,6 +319,65 @@ namespace ShootyGameAPITests.ConrollerTests
             Assert.Equal(500, result.StatusCode);
         }
 
+        [Fact]
+        public async Task RemoveFriendFromUserAsync_ShouldReturnStatusCode200_WhenFriendIsRemovedSuccessfully()
+        {
+            // Arrange
+            int requesterId = 1;
+            int receiverId = 2;
+
+            var userResponse = new UserResponse
+            {
+                UserId = requesterId,
+                Email = "admin@mail.com",
+                Role = Role.Admin,
+                Friends = new()
+                {
+                    new User_FriendResponse
+                    {
+                        UserId = receiverId
+                    }
+                }
+            };
+
+            _userServiceMock
+                .Setup(x => x.RemoveFriendFromUserByIdAsync(requesterId, receiverId))
+                .ReturnsAsync(userResponse);
+
+            httpContext.Items["User"] = userResponse;
+
+            // Act
+            var result = await _userController.RemoveFriendFromUserAsync(requesterId, receiverId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(200, okResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task RemoveFriendFromUserAsync_ShouldReturnStatusCode404_WhenFriendNotFound()
+        {
+            // Arrange
+            int requesterId = 1;
+            int receiverId = 2;
+
+            _userServiceMock
+                .Setup(x => x.RemoveFriendFromUserByIdAsync(requesterId, receiverId))
+                .ReturnsAsync((UserResponse?)null);
+
+            httpContext.Items["User"] = new UserResponse
+            {
+                UserId = requesterId,
+                Role = Role.Admin
+            };
+
+            // Act
+            var result = await _userController.RemoveFriendFromUserAsync(requesterId, receiverId);
+
+            // Assert
+            var notFoundResult = Assert.IsType<NotFoundResult>(result);
+            Assert.Equal(404, notFoundResult.StatusCode);
+        }
 
         [Fact]
         public async Task GetAllUsersAsync_ShouldReturnStatusCode200_WhenUsersExist()
