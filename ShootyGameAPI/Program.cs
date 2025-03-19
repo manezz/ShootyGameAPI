@@ -46,20 +46,30 @@ builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.Services.Configure<AppSettings>(options =>
+var appSettings = new AppSettings();
+
+if (builder.Environment.IsDevelopment())
 {
-    // standard way to get secret from appsettings.json
-    builder.Configuration.GetSection("AppSettings").Bind(options);
+    // In development, allow secret from appsettings.json
+    builder.Configuration.GetSection("AppSettings").Bind(appSettings);
 
-    // check if secret is set in environment variable
+    // If a secret is found in the environment, override the one from appsettings.json
     var secretFromEnv = builder.Configuration["ShootyGameAPI_JWT_SECRET"];
-
-    // if secret is set in environment variable, use it instead
     if (!string.IsNullOrWhiteSpace(secretFromEnv))
     {
-        options.Secret = secretFromEnv;
-        Console.WriteLine("JWT secret from Env found");
+        appSettings.Secret = secretFromEnv;
+        Console.WriteLine("JWT secret from Env found (overriding appsettings.json)");
     }
+    else
+    {
+        Console.WriteLine("JWT secret loaded from appsettings.json");
+    }
+}
+
+// Register the configured AppSettings into DI
+builder.Services.Configure<AppSettings>(options =>
+{
+    options.Secret = appSettings.Secret;
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -95,16 +105,16 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+
+app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
-
-app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
 app.UseMiddleware<JwtMiddleware>();
 
