@@ -33,7 +33,11 @@ namespace ShootyGameAPI.Repositorys
                 .Include(x => x.SentFriendReqs.Where(f => f.Status == FriendReqStatus.Pending))
                 .Include(x => x.ReceivedFriendReqs.Where(f => f.Status == FriendReqStatus.Pending))
                 .Include(x => x.FriendsAsRequester)
+                    .ThenInclude(x => x.Receiver)
+                        .ThenInclude(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .Include(x => x.FriendsAsReceiver)
+                    .ThenInclude(x => x.Requester)
+                        .ThenInclude(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .Include(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .ToListAsync();
         }
@@ -48,8 +52,10 @@ namespace ShootyGameAPI.Repositorys
                 .Include(x => x.ReceivedFriendReqs.Where(f => f.Status == FriendReqStatus.Pending))
                 .Include(x => x.FriendsAsRequester)
                     .ThenInclude(x => x.Receiver)
+                        .ThenInclude(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .Include(x => x.FriendsAsReceiver)
                     .ThenInclude(x => x.Requester)
+                        .ThenInclude(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .Include(x => x.Scores.OrderByDescending(x => x.ScoreValue))
                 .FirstOrDefaultAsync(x => x.UserId == userId);
         }
