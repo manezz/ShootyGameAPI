@@ -93,12 +93,26 @@ namespace ShootyGameAPI.Services
                 {
                     UserId = f.ReceiverId,
                     UserName = f.Receiver.UserName,
-                    PlayerTag = f.Receiver.PlayerTag
+                    PlayerTag = f.Receiver.PlayerTag,
+                    Scores = f.Receiver.Scores.Select(s => new User_ScoreResponse
+                    {
+                        ScoreId = s.ScoreId,
+                        ScoreValue = s.ScoreValue,
+                        AverageAccuracy = s.AverageAccuracy,
+                        RoundTime = s.RoundTime
+                    }).ToList()
                 }).Concat(user.FriendsAsReceiver.Select(f => new User_FriendResponse
                 {
                     UserId = f.RequesterId,
                     UserName = f.Requester.UserName,
-                    PlayerTag = f.Requester.PlayerTag
+                    PlayerTag = f.Requester.PlayerTag,
+                    Scores = f.Requester.Scores.Select(s => new User_ScoreResponse
+                    {
+                        ScoreId = s.ScoreId,
+                        ScoreValue = s.ScoreValue,
+                        AverageAccuracy = s.AverageAccuracy,
+                        RoundTime = s.RoundTime
+                    }).ToList()
                 })).ToList()
             };
         }

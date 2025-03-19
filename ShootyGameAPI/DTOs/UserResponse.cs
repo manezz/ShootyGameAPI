@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using ShootyGameAPI.Helpers;
+﻿using ShootyGameAPI.Helpers;
 
 namespace ShootyGameAPI.DTOs
 {
@@ -57,5 +56,6 @@ namespace ShootyGameAPI.DTOs
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string PlayerTag { get; set; }
+        public List<User_ScoreResponse> Scores { get; set; } = new();
     }
 }
