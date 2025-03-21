@@ -71,6 +71,8 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.HasIndex(e => e.PlayerTag).IsUnique();
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
             modelBuilder.Entity<Weapon>(entity =>
@@ -85,6 +87,8 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.FireMode).HasDefaultValue(FireMode.Single).IsRequired();
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
             modelBuilder.Entity<WeaponType>(entity =>
@@ -94,6 +98,8 @@ namespace ShootyGameAPI.Database
                 entity.Property(e => e.EquipmentSlot).IsRequired();
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("GetDate()");
                 entity.Property(e => e.IsDeleted).HasColumnType("bit");
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
             modelBuilder.Entity<UserWeapon>(entity =>
@@ -114,6 +120,8 @@ namespace ShootyGameAPI.Database
                 entity.HasOne(e => e.Weapon)
                     .WithMany(e => e.UserWeapons)
                     .HasForeignKey(e => e.WeaponId);
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
             modelBuilder.Entity<Friend>(entity =>
@@ -136,6 +144,8 @@ namespace ShootyGameAPI.Database
                     .WithMany(e => e.FriendsAsReceiver)
                     .HasForeignKey(e => e.ReceiverId)
                     .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
             modelBuilder.Entity<FriendReq>(entity =>
@@ -158,6 +168,8 @@ namespace ShootyGameAPI.Database
                     .WithMany(e => e.ReceivedFriendReqs)
                     .HasForeignKey(e => e.ReceiverId)
                     .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
             modelBuilder.Entity<Score>(entity =>
@@ -174,6 +186,8 @@ namespace ShootyGameAPI.Database
                 entity.HasOne(e => e.User)
                     .WithMany(e => e.Scores)
                     .HasForeignKey(e => e.UserId);
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
 
             modelBuilder.Entity<User>().HasData(
