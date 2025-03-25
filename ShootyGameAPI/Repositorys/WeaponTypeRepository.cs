@@ -7,10 +7,10 @@ namespace ShootyGameAPI.Repositorys
     public interface IWeaponTypeRepository
     {
         Task<List<WeaponType>> GetAllWeaponTypesAsync();
-        Task<WeaponType?> FindWeaponTypeByIdAsync(int id);
+        Task<WeaponType?> FindWeaponTypeByIdAsync(int weaponTypeId);
         Task<WeaponType> CreateWeaponTypeAsync(WeaponType newWeaponType);
         Task<WeaponType?> UpdateWeaponTypeByIdAsync(int weaponTypeId, WeaponType updatedWeaponType);
-        Task<WeaponType?> DeleteWeaponTypeByIdAsync(int id);
+        Task<WeaponType?> DeleteWeaponTypeByIdAsync(int weaponTypeId);
     }
 
     public class WeaponTypeRepository : IWeaponTypeRepository
@@ -27,9 +27,9 @@ namespace ShootyGameAPI.Repositorys
             return await _context.WeaponTypes.ToListAsync();
         }
 
-        public async Task<WeaponType?> FindWeaponTypeByIdAsync(int id)
+        public async Task<WeaponType?> FindWeaponTypeByIdAsync(int weaponTypeId)
         {
-            return await _context.WeaponTypes.FindAsync(id);
+            return await _context.WeaponTypes.FindAsync(weaponTypeId);
         }
 
         public async Task<WeaponType> CreateWeaponTypeAsync(WeaponType newWeaponType)
@@ -41,7 +41,7 @@ namespace ShootyGameAPI.Repositorys
 
         public async Task<WeaponType?> UpdateWeaponTypeByIdAsync(int weaponTypeId, WeaponType updatedWeaponType)
         {
-            var weaponType = await FindWeaponTypeByIdAsync(updatedWeaponType.WeaponTypeId);
+            var weaponType = await FindWeaponTypeByIdAsync(weaponTypeId);
 
             if (weaponType != null)
             {
@@ -49,14 +49,14 @@ namespace ShootyGameAPI.Repositorys
                 weaponType.EquipmentSlot = updatedWeaponType.EquipmentSlot;
 
                 await _context.SaveChangesAsync();
-                return updatedWeaponType;
+                return await FindWeaponTypeByIdAsync(weaponTypeId);
             }
             return weaponType;
         }
 
-        public async Task<WeaponType?> DeleteWeaponTypeByIdAsync(int id)
+        public async Task<WeaponType?> DeleteWeaponTypeByIdAsync(int weaponTypeId)
         {
-            var weaponType = await FindWeaponTypeByIdAsync(id);
+            var weaponType = await FindWeaponTypeByIdAsync(weaponTypeId);
             if (weaponType != null)
             {
                 _context.WeaponTypes.Remove(weaponType);
