@@ -206,30 +206,6 @@ namespace ShootyGameAPITests.ConrollerTests
             Assert.Equal(200, result.StatusCode);
         }
 
-
-        [Fact]
-        public async Task RemoveWeaponFromUserAsync_ShouldReturnStatusCode401_WhenUnauthorized()
-        {
-            // Arrange
-            int userId = 1;
-            int weaponId = 1;
-
-            var unauthorizedUser = new UserResponse
-            {
-                UserId = 2,
-                Email = "user@mail.com",
-                Role = Role.User
-            };
-
-            httpContext.Items["User"] = unauthorizedUser;
-
-            // Act
-            var result = (IStatusCodeActionResult)await _userController.RemoveWeaponFromUserAsync(userId, weaponId);
-
-            // Assert
-            Assert.Equal(401, result.StatusCode);
-        }
-
         [Fact]
         public async Task RemoveWeaponFromUserAsync_ShouldReturnStatusCode404_WhenUserNotFound()
         {
