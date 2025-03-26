@@ -68,20 +68,13 @@ namespace ShootyGameAPI.Controllers
             }
         }
 
-        [Authorize(Role.User, Role.Admin)]
+        [Authorize(Role.Admin)]
         [HttpDelete]
         [Route("{userId}/weapons/{weaponId}")]
         public async Task<IActionResult> RemoveWeaponFromUserAsync(int userId, int weaponId)
         {
             try
             {
-                var currentUser = (UserResponse?)HttpContext.Items["User"];
-
-                if (currentUser == null || currentUser.UserId != userId && currentUser.Role != Role.Admin)
-                {
-                    return Unauthorized(new { message = "Unauthorized" });
-                }
-
                 var userResponse = await _userService.RemoveWeaponFromUserByIdAsync(userId, weaponId);
 
                 if (userResponse == null)
